@@ -14,7 +14,7 @@ import UIKit
 
 public class SFPickerView: UIView {
     
-    // MARK: - Property(internal)
+    // MARK: - Property
     public lazy var alertView: SFPickerAlertView = {
         let view = SFPickerAlertView(frame: self.bounds)
         return view

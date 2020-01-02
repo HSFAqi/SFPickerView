@@ -10,7 +10,7 @@ import UIKit
 
 public class SFPickerAlertView: UIView {
     
-    // MARK: - Property(internal)
+    // MARK: - Property
     public var contentView: UIView! = UIView(){
         willSet{
             contentView.removeFromSuperview()

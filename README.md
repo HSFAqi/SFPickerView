@@ -22,7 +22,7 @@ pod 'SFPickerView'
 
 ## Author
 
-hsfiOSGitHub, hsf_ios@sina.com
+HSFAqi, huangsf_ios@sina.com
 
 ## License
 

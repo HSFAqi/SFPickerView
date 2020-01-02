@@ -25,6 +25,8 @@ public class SFStringPickerView: SFPickerView {
     private(set) var defaultIndexs = [Int]()
     private(set) var selectedIndexs = [Int]()
     private(set) var selectedValues = [String]()
+    private var completedBlock: ((Int, String) -> Void)?
+    private var mulCompletedBlock: (([Int], [String]) -> Void)?
     
     
     // MARK: - ConfigUI
@@ -39,6 +41,8 @@ public class SFStringPickerView: SFPickerView {
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
+    ///   - defaultIndex: 默认选中项
+    ///   - completed: 回调
     public func showPickerWithTitle(_ title: String, dataSource: [String], defaultIndex: Int = 0,  completed: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
@@ -53,19 +57,16 @@ public class SFStringPickerView: SFPickerView {
         show()
         self.alertView.sureBlock = {
             [weak self] in
-            guard let weakSelf = self else {
-                return
-            }
-            let index = weakSelf.selectedIndexs[0]
-            let value = weakSelf.selectedValues[0]
-            completed(index, value)
-            weakSelf.dismiss()
+            self?.completedBlock = completed
+            self?.dismiss()
         }
     }
     /// show（单列，类方法）
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
+    ///   - defaultIndex: 默认选中项
+    ///   - completed: 回调
     @discardableResult
     public class func showPickerWithTitle(_ title: String, dataSource: [String], defaultIndex: Int = 0,  completed: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
@@ -79,6 +80,8 @@ public class SFStringPickerView: SFPickerView {
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
+    ///   - defaultIndexs: 默认选中项
+    ///   - completed: 回调
     public func showPickerWithTitle(_ title: String, dataSource: [[String]], defaultIndexs: [Int]?,  completed: @escaping (([Int], [String]) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空")
@@ -105,19 +108,16 @@ public class SFStringPickerView: SFPickerView {
         show()
         self.alertView.sureBlock = {
             [weak self] in
-            guard let weakSelf = self else {
-                return
-            }
-            let index = weakSelf.selectedIndexs
-            let value = weakSelf.selectedValues
-            completed(index, value)
-            weakSelf.dismiss()
+            self?.mulCompletedBlock = completed
+            self?.dismiss()
         }
     }
     /// show（多列，类方法）
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
+    ///   - defaultIndexs: 默认选中项
+    ///   - completed: 回调
     @discardableResult
     public class func showPickerWithTitle(_ title: String, dataSource: [[String]], defaultIndexs: [Int]?,  completed: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
@@ -246,5 +246,11 @@ extension SFStringPickerView: UIPickerViewDelegate {
         }
         selectedIndexs[component] = row
         selectedValues[component] = values[row]
+        if let completed = completedBlock {
+            completed(selectedIndexs[0], selectedValues[0])
+        }
+        if let mulCompleted = mulCompletedBlock {
+            mulCompleted(selectedIndexs, selectedValues)
+        }
     }
 }
