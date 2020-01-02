@@ -24,7 +24,7 @@ TODO: Add long description of the pod here.
   s.homepage         = 'https://github.com/HSFAqi/SFPickerView'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'hsfiOSGitHub' => 'hsf_ios@sina.com' }
+  s.author           = { 'hsfiOSGitHub' => 'huangsf_ios@sina.com' }
   s.source           = { :git => 'https://github.com/HSFAqi/SFPickerView.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
