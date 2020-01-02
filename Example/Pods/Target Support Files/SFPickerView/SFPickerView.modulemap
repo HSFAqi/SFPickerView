@@ -1,0 +1,6 @@
+framework module SFPickerView {
+  umbrella header "SFPickerView-umbrella.h"
+
+  export *
+  module * { export * }
+}
