@@ -132,7 +132,7 @@ public class SFAddressPickerView: SFPickerView {
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
-    public func showPickerWithTitle(_ title: String, defaultIndexs: [Int]?,  completed: @escaping (ProvinceModel?, CityModel?, AreaModel?) -> Void) {
+    public func showPickerWithTitle(_ title: String?, defaultIndexs: [Int]?,  completed: @escaping (ProvinceModel?, CityModel?, AreaModel?) -> Void) {
         self.title = title
         self.defaultIndexs = defaultIndexs
         configSeletedIndexAndValues()
@@ -152,7 +152,7 @@ public class SFAddressPickerView: SFPickerView {
     ///   - title: 标题
     ///   - dataSource: 数据源
     @discardableResult
-    public class func showPickerWithTitle(_ title: String, defaultIndexs: [Int]?, completed: @escaping (ProvinceModel?, CityModel?, AreaModel?) -> Void) -> SFAddressPickerView {
+    public class func showPickerWithTitle(_ title: String?, defaultIndexs: [Int]?, completed: @escaping (ProvinceModel?, CityModel?, AreaModel?) -> Void) -> SFAddressPickerView {
         let pickerView = SFAddressPickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, defaultIndexs: defaultIndexs, completed: completed)
         return pickerView
