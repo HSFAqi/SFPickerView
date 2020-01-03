@@ -71,6 +71,21 @@ class ViewController: UIViewController {
     }
     
     
+    // date
+    @IBAction func dateAction(_ sender: UIButton) {
+        if sender.tag == 0 {
+            let picker = SFDatePickerView((frame: CGRect.zero))
+            
+        }
+        else if sender.tag == 1 {
+            SFAddressPickerView.showPickerWithTitle("地址对象方法", defaultIndexs: nil) { (provinceModel, cityModel, areaModel) in
+                print("provinceModel:\(String(describing: provinceModel?.name))")
+                print("cityModel:\(String(describing: cityModel?.name))")
+                print("areaModel:\(String(describing: areaModel?.name))")
+            }
+        }
+    }
+    
     
     
     
