@@ -18,28 +18,32 @@ class ViewController: UIViewController {
 
     // MARK: - string
     @IBAction func stringAction(_ sender: UIButton) {
+        let dataSource0 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        let dataSource1 = [dataSource0, dataSource0]
+        let isCallbackWhenSelecting = false
+        
         if sender.tag == 0 {
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("单列对象方法", dataSource: ["1", "2", "3", "4", "5", "6"]) { (index, value) in
+            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
         }
         else if sender.tag == 1 {
-            SFStringPickerView.showPickerWithTitle("单列类方法", dataSource: ["1", "2", "3", "4", "5", "6"]) { (index, value) in
+            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
         }
         else if sender.tag == 2 {
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("多列对象方法", dataSource: [["1", "2", "3", "4", "5", "6"], ["1", "2", "3", "4", "5", "6"]], defaultIndexs: [1, 2]) { (indexs, values) in
+            picker.showPickerWithTitle("【多列】对象方法", dataSource: dataSource1, defaultIndexs: [2, 3], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 3 {
-            SFStringPickerView.showPickerWithTitle("多列类方法", dataSource: [["1", "2", "3", "4", "5", "6"], ["1", "2", "3", "4", "5", "6"]], defaultIndexs: [1, 2]) { (indexs, values) in
+            SFStringPickerView.showPickerWithTitle("【多列】类方法", dataSource: dataSource1, defaultIndexs: [2, 3], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }

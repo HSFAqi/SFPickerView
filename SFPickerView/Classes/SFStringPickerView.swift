@@ -25,9 +25,10 @@ public class SFStringPickerView: SFPickerView {
     private(set) var defaultIndexs = [Int]()
     private(set) var selectedIndexs = [Int]()
     private(set) var selectedValues = [String]()
-    private var completedBlock: ((Int, String) -> Void)?
-    private var mulCompletedBlock: (([Int], [String]) -> Void)?
-    
+    private(set) var isCallbackWhenSelecting: Bool = false
+    private var callbackBlock: ((Int, String) -> Void)?
+    private var mulCallbackBlock: (([Int], [String]) -> Void)?
+    private var isChanged: Bool = false
     
     // MARK: - ConfigUI
     override func configUI() {
@@ -42,8 +43,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - title: 标题
     ///   - dataSource: 数据源
     ///   - defaultIndex: 默认选中项
-    ///   - completed: 回调
-    public func showPickerWithTitle(_ title: String, dataSource: [String], defaultIndex: Int = 0,  completed: @escaping ((Int, String) -> Void)) {
+    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - callback: 回调
+    public func showPickerWithTitle(_ title: String, dataSource: [String], defaultIndex: Int = 0, isCallbackWhenSelecting: Bool, callback: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
             return
@@ -54,11 +56,21 @@ public class SFStringPickerView: SFPickerView {
         pickerView.reloadAllComponents()
         self.defaultIndexs = [defaultIndex]
         configSeletedIndexAndValues()
+        self.isCallbackWhenSelecting = isCallbackWhenSelecting
+        self.callbackBlock = callback
+        isChanged = false
         show()
         self.alertView.sureBlock = {
             [weak self] in
-            self?.completedBlock = completed
-            self?.dismiss()
+            guard let ws = self else {
+                return
+            }
+            if !ws.isChanged || !ws.isCallbackWhenSelecting {
+                if let callback = ws.callbackBlock {
+                    callback(ws.selectedIndexs[0], ws.selectedValues[0])
+                }
+            }
+            ws.dismiss()
         }
     }
     /// show（单列，类方法）
@@ -66,11 +78,12 @@ public class SFStringPickerView: SFPickerView {
     ///   - title: 标题
     ///   - dataSource: 数据源
     ///   - defaultIndex: 默认选中项
-    ///   - completed: 回调
+    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String, dataSource: [String], defaultIndex: Int = 0,  completed: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String, dataSource: [String], defaultIndex: Int = 0, isCallbackWhenSelecting: Bool, callback: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndex: defaultIndex, completed: completed)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
         return pickerView
     }
     
@@ -81,8 +94,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - title: 标题
     ///   - dataSource: 数据源
     ///   - defaultIndexs: 默认选中项
-    ///   - completed: 回调
-    public func showPickerWithTitle(_ title: String, dataSource: [[String]], defaultIndexs: [Int]?,  completed: @escaping (([Int], [String]) -> Void)) {
+    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - callback: 回调
+    public func showPickerWithTitle(_ title: String, dataSource: [[String]], defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空")
             return
@@ -105,11 +119,20 @@ public class SFStringPickerView: SFPickerView {
         self.dataSource = dataSource
         pickerView.reloadAllComponents()
         configSeletedIndexAndValues()
+        self.isCallbackWhenSelecting = isCallbackWhenSelecting
+        self.mulCallbackBlock = callback
         show()
         self.alertView.sureBlock = {
             [weak self] in
-            self?.mulCompletedBlock = completed
-            self?.dismiss()
+            guard let ws = self else {
+                return
+            }
+            if !ws.isChanged || !ws.isCallbackWhenSelecting {
+                if let callback = ws.mulCallbackBlock {
+                    callback(ws.selectedIndexs, ws.selectedValues)
+                }
+            }
+            ws.dismiss()
         }
     }
     /// show（多列，类方法）
@@ -117,11 +140,12 @@ public class SFStringPickerView: SFPickerView {
     ///   - title: 标题
     ///   - dataSource: 数据源
     ///   - defaultIndexs: 默认选中项
-    ///   - completed: 回调
+    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String, dataSource: [[String]], defaultIndexs: [Int]?,  completed: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String, dataSource: [[String]], defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, completed: completed)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
         return pickerView
     }
     
@@ -246,11 +270,12 @@ extension SFStringPickerView: UIPickerViewDelegate {
         }
         selectedIndexs[component] = row
         selectedValues[component] = values[row]
-        if let completed = completedBlock {
-            completed(selectedIndexs[0], selectedValues[0])
+        if let callback = callbackBlock, self.isCallbackWhenSelecting == true {
+            callback(selectedIndexs[0], selectedValues[0])
         }
-        if let mulCompleted = mulCompletedBlock {
-            mulCompleted(selectedIndexs, selectedValues)
+        if let mulCallback = mulCallbackBlock, self.isCallbackWhenSelecting == true {
+            mulCallback(selectedIndexs, selectedValues)
         }
+        isChanged = true
     }
 }
