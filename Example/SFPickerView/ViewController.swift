@@ -23,16 +23,7 @@ class ViewController: UIViewController {
         let isCallbackWhenSelecting = false
         
         if sender.tag == 0 {
-            
-            let config = SFStringPickerConfig()
-            var appearance = SFPickerAlertViewAppearance()
-            appearance.contentViewBackgroundColor = UIColor.white
-            config.appearance = appearance
-            config.isAnimated = true
-            config.rowHeight = 100
-            
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.config = config
             picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
