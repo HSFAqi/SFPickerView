@@ -8,6 +8,9 @@
 
 import UIKit
 
+// TODO:
+// 1，自定义SFDateMode
+
 public class SFDatePickerView: SFPickerView {
         
     // MARK: - Enum
@@ -143,7 +146,7 @@ extension SFDatePickerView: UIPickerViewDataSource {
 extension SFDatePickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return 50
+        return config.rowHeight
     }
     
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {

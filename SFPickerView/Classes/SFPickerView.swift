@@ -9,8 +9,6 @@
 import UIKit
 
 // TODO:
-// 1，外观配置
-// 2，降低依赖：移除Snap，改用frame布局
 
 
 public struct SFPickerConfig {
@@ -21,6 +19,9 @@ public struct SFPickerConfig {
     public var isAnimated: Bool = true
     public var during: TimeInterval = 0.3
     public var alertViewHeight: CGFloat = 300
+    
+    public var rowHeight: CGFloat = 50
+    
     public init() { }
 }
 
@@ -29,8 +30,6 @@ public class SFPickerView: UIView {
     // MARK: - Property(public)
     public var config: SFPickerConfig = SFPickerConfig() {
         willSet{
-            alertView.appearance = newValue.appearance
-            maskBackgroundView.backgroundColor = newValue.maskBackgroundColor
             configUI()
         }
     }
@@ -71,8 +70,10 @@ public class SFPickerView: UIView {
         addToView(nil)
         addSubview(maskBackgroundView)
         addSubview(alertView)
-        maskBackgroundView.frame = self.bounds
+        maskBackgroundView.backgroundColor = config.maskBackgroundColor
         maskBackgroundView.isUserInteractionEnabled = config.isMaskEnabled
+        maskBackgroundView.frame = self.bounds
+        alertView.appearance = config.appearance
         alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: config.alertViewHeight)
         alertView.cancelBlock = {
             [weak self] in

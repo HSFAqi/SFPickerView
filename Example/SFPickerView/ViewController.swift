@@ -23,7 +23,16 @@ class ViewController: UIViewController {
         let isCallbackWhenSelecting = false
         
         if sender.tag == 0 {
+            
+            var config = SFPickerConfig()
+            var appearance = SFPickerAlertViewAppearance()
+            appearance.contentViewBackgroundColor = UIColor.white
+            config.appearance = appearance
+            config.isAnimated = true
+            config.rowHeight = 100
+            
             let picker = SFStringPickerView(frame: CGRect.zero)
+            picker.config = config
             picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
@@ -75,19 +84,6 @@ class ViewController: UIViewController {
     @IBAction func dateAction(_ sender: UIButton) {
         if sender.tag == 0 {
             let picker = SFDatePickerView(frame: CGRect.zero)
-            var config = SFPickerConfig()
-            config.during = 1
-            var appearance = SFPickerAlertViewAppearance()
-            appearance.contentViewBackgroundColor = UIColor.white
-            
-//            let cancelBtn = UIButton()
-//            cancelBtn.setTitle("✈️", for: .normal)
-//            cancelBtn.backgroundColor = UIColor.orange
-//            appearance.customCancleBtn = cancelBtn
-            
-            config.appearance = appearance
-            config.isAnimated = true
-            picker.config = config
             picker.showPickerWithTitle("时间", mode: .time, minDate: nil, maxDate: nil, isCallbackWhenSelecting: true) { (date, value) in
                 print("date:\(date)")
                 print("value:\(value)")

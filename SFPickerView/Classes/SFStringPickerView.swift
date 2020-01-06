@@ -10,6 +10,7 @@ import UIKit
 
 // TODO:
 // 1，多列时的联动
+// 2，动态更改rowHeight
 
 public class SFStringPickerView: SFPickerView {
     
@@ -35,7 +36,11 @@ public class SFStringPickerView: SFPickerView {
         super.configUI()
         alertView.contentView = pickerView
     }
-    
+    public override var config: SFPickerConfig{
+        didSet{
+            pickerView.reloadAllComponents()
+        }
+    }
     
     // MARK: - 单列
     /// show（单列，对象方法）
@@ -236,7 +241,7 @@ extension SFStringPickerView: UIPickerViewDataSource {
 extension SFStringPickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return 50
+        return config.rowHeight
     }
     
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
