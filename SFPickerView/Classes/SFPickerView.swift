@@ -12,12 +12,26 @@ import UIKit
 // 1，外观配置
 // 2，降低依赖：移除Snap，改用frame布局
 
-public class SFPickerView: UIView {
+
+public struct SFPickerConfig {
+    public var superView: UIView?
+    public var appearance: SFPickerAlertViewAppearance = SFPickerAlertViewAppearance()
+    public var maskBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3)
+    public var isMaskEnabled: Bool = true
+    public var isAnimated: Bool = true
+    public var during: TimeInterval = 0.3
+    public var alertViewHeight: CGFloat = 300
+    public init() { }
+}
+
+public class SFPickerView: UIView {    
 
     // MARK: - Property(public)
-    public var isMaskEnabled: Bool = true {
+    public var config: SFPickerConfig = SFPickerConfig() {
         willSet{
-            maskBackgroundView.isUserInteractionEnabled = newValue
+            alertView.appearance = newValue.appearance
+            maskBackgroundView.backgroundColor = newValue.maskBackgroundColor
+            configUI()
         }
     }
     
@@ -33,11 +47,8 @@ public class SFPickerView: UIView {
     }    
 
     // MARK: - Property(private)
-    private let during = 0.3
-    private let alertViewHeight: CGFloat = 300
     private lazy var maskBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapMaskAction))
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(tap)
@@ -61,7 +72,8 @@ public class SFPickerView: UIView {
         addSubview(maskBackgroundView)
         addSubview(alertView)
         maskBackgroundView.frame = self.bounds
-        alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: alertViewHeight)
+        maskBackgroundView.isUserInteractionEnabled = config.isMaskEnabled
+        alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: config.alertViewHeight)
         alertView.cancelBlock = {
             [weak self] in
             self?.dismiss()
@@ -76,25 +88,36 @@ public class SFPickerView: UIView {
     
     /// show
     public func show() {
-        addToView(nil)
-        UIView.animate(withDuration: during) {
-            [weak self] in
-            guard let weakSelf = self else { return }
-            weakSelf.maskBackgroundView.alpha = 1
-            weakSelf.alertView.frame = CGRect(x: 0, y: weakSelf.frame.size.height-weakSelf.alertViewHeight, width: weakSelf.frame.size.width, height: weakSelf.alertViewHeight)
+        addToView(config.superView)
+        if config.isAnimated {
+            UIView.animate(withDuration: config.during) {
+                [weak self] in
+                guard let weakSelf = self else { return }
+                weakSelf.maskBackgroundView.alpha = 1
+                weakSelf.alertView.frame = CGRect(x: 0, y: weakSelf.frame.size.height-weakSelf.config.alertViewHeight, width: weakSelf.frame.size.width, height: weakSelf.config.alertViewHeight)
+            }
+        }else{
+            self.maskBackgroundView.alpha = 1
+            self.alertView.frame = CGRect(x: 0, y: self.frame.size.height-self.config.alertViewHeight, width: self.frame.size.width, height: self.config.alertViewHeight)
         }
     }
     
     /// dismiss
     public func dismiss() {
-        UIView.animate(withDuration: during, animations: {
-            [weak self] in
-            guard let weakSelf = self else { return }
-            weakSelf.maskBackgroundView.alpha = 0
-            weakSelf.alertView.frame = CGRect(x: 0, y: weakSelf.frame.size.height, width: weakSelf.frame.size.width, height: weakSelf.alertViewHeight)
-        }) {
-            [weak self] (isFinished) in
-            self?.removeFromSuperview()
+        if config.isAnimated {
+            UIView.animate(withDuration: config.during, animations: {
+                [weak self] in
+                guard let weakSelf = self else { return }
+                weakSelf.maskBackgroundView.alpha = 0
+                weakSelf.alertView.frame = CGRect(x: 0, y: weakSelf.frame.size.height, width: weakSelf.frame.size.width, height: weakSelf.config.alertViewHeight)
+            }) {
+                [weak self] (isFinished) in
+                self?.removeFromSuperview()
+            }
+        }else{
+            self.maskBackgroundView.alpha = 0
+            self.alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: self.config.alertViewHeight)
+            self.removeFromSuperview()
         }
     }
     

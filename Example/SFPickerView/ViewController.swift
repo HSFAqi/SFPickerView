@@ -75,11 +75,23 @@ class ViewController: UIViewController {
     @IBAction func dateAction(_ sender: UIButton) {
         if sender.tag == 0 {
             let picker = SFDatePickerView(frame: CGRect.zero)
+            var config = SFPickerConfig()
+            config.during = 1
+            var appearance = SFPickerAlertViewAppearance()
+            appearance.contentViewBackgroundColor = UIColor.white
+            
+//            let cancelBtn = UIButton()
+//            cancelBtn.setTitle("✈️", for: .normal)
+//            cancelBtn.backgroundColor = UIColor.orange
+//            appearance.customCancleBtn = cancelBtn
+            
+            config.appearance = appearance
+            config.isAnimated = true
+            picker.config = config
             picker.showPickerWithTitle("时间", mode: .time, minDate: nil, maxDate: nil, isCallbackWhenSelecting: true) { (date, value) in
                 print("date:\(date)")
                 print("value:\(value)")
             }
-            picker.isMaskEnabled = false
         }
         else if sender.tag == 1 {
             SFDatePickerView.showPickerWithTitle("时间", mode: .time, minDate: nil, maxDate: nil, isCallbackWhenSelecting: true) { (date, value) in

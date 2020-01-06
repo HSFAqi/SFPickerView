@@ -8,7 +8,27 @@
 
 import UIKit
 
-public class SFPickerAlertView: UIView {
+public struct SFPickerAlertViewAppearance {
+    public var topViewBackgroundColor: UIColor = UIColor.white
+    public var lineViewBackgroundColor: UIColor = UIColor(red: 230.00/255.00, green: 230.00/255.00, blue: 230.00/255.00, alpha: 1)
+    public var contentViewBackgroundColor: UIColor = UIColor.white
+    public var cancelBtnBackgroundColor: UIColor = UIColor.white
+    public var cancelBtnTextColor: UIColor = UIColor.darkGray
+    public var cancleBtnFont: UIFont = UIFont.systemFont(ofSize: 14)
+    public var cancelBtnText: String = "取消"
+    public var sureBtnBackgroundColor: UIColor = UIColor.white
+    public var sureBtnTextColor: UIColor = UIColor.darkGray
+    public var sureBtnFont: UIFont = UIFont.systemFont(ofSize: 14)
+    public var sureBtnText: String = "确定"
+    public var titleTextColor: UIColor = UIColor.darkGray
+    public var titleFont: UIFont = UIFont.systemFont(ofSize: 14)
+    // 也可传入自定义的button
+    public var customCancleBtn: UIButton?
+    public var customSureBtn: UIButton?
+    public init() { }
+}
+
+public class SFPickerAlertView: UIView {    
     
     // MARK: - Property(internal)
     var contentView: UIView! = UIView(){
@@ -25,39 +45,38 @@ public class SFPickerAlertView: UIView {
     }
     var sureBlock: (() -> Void)?
     var cancelBlock: (() -> Void)?
+    var appearance: SFPickerAlertViewAppearance = SFPickerAlertViewAppearance() {
+        didSet{
+            customAppearanceSubviews()
+        }
+    }
 
     // MARK: - Property(private)
     private lazy var cancelBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.setTitle("取消", for: .normal)
-        btn.setTitleColor(UIColor.darkGray, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.addTarget(self, action: #selector(cancelAction), for: .touchUpInside)
+        btn.layer.masksToBounds = true
+        btn.layer.cornerRadius = 8
         return btn
     }()
     private lazy var sureBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.setTitle("确定", for: .normal)
-        btn.setTitleColor(UIColor.darkGray, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.addTarget(self, action: #selector(sureAction), for: .touchUpInside)
+        btn.layer.masksToBounds = true
+        btn.layer.cornerRadius = 8
         return btn
     }()
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor.darkGray
-        label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
     private lazy var topView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.white
         return view
     }()
     private lazy var lineView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 230.00/255.00, green: 230.00/255.00, blue: 230.00/255.00, alpha: 1)
         return view
     }()
     
@@ -75,6 +94,17 @@ public class SFPickerAlertView: UIView {
             customFrameSubviews()
         }
     }
+    private func configUI() {
+        backgroundColor = UIColor.white
+        topView.addSubview(cancelBtn)
+        topView.addSubview(sureBtn)
+        topView.addSubview(titleLabel)
+        addSubview(topView)
+        addSubview(lineView)
+        addSubview(contentView)
+        customFrameSubviews()
+        customAppearanceSubviews()
+    }
     private func customFrameSubviews() {
         let topViewHeight: CGFloat = 40
         let padding: CGFloat = 5
@@ -85,15 +115,38 @@ public class SFPickerAlertView: UIView {
         sureBtn.frame = CGRect(x: titleLabel.frame.maxX+padding, y: padding, width: btnWidth, height: topView.frame.size.height-padding*2)
         lineView.frame = CGRect(x: 0, y: topView.frame.maxY, width: self.frame.size.width, height: 1)
     }
-    private func configUI() {
-        backgroundColor = UIColor.white
-        topView.addSubview(cancelBtn)
-        topView.addSubview(sureBtn)
-        topView.addSubview(titleLabel)
-        addSubview(topView)
-        addSubview(lineView)
-        addSubview(contentView)
-        customFrameSubviews()
+    private func customAppearanceSubviews() {
+        topView.backgroundColor = appearance.topViewBackgroundColor
+        lineView.backgroundColor = appearance.lineViewBackgroundColor
+        contentView.backgroundColor = appearance.contentViewBackgroundColor
+        
+        cancelBtn.backgroundColor = appearance.cancelBtnBackgroundColor
+        cancelBtn.setTitleColor(appearance.cancelBtnTextColor, for: .normal)
+        cancelBtn.titleLabel?.font = appearance.cancleBtnFont
+        cancelBtn.setTitle(appearance.cancelBtnText, for: .normal)
+        
+        sureBtn.backgroundColor = appearance.sureBtnBackgroundColor
+        sureBtn.setTitleColor(appearance.sureBtnTextColor, for: .normal)
+        sureBtn.titleLabel?.font = appearance.sureBtnFont
+        sureBtn.setTitle(appearance.sureBtnText, for: .normal)
+        
+        titleLabel.textColor = appearance.titleTextColor
+        titleLabel.font = appearance.titleFont
+        
+        if let btn = appearance.customCancleBtn {
+            let frame = cancelBtn.frame
+            cancelBtn.removeFromSuperview()
+            addSubview(btn)
+            btn.frame = frame
+            cancelBtn = btn
+        }
+        if let btn = appearance.customSureBtn {
+            let frame = sureBtn.frame
+            sureBtn.removeFromSuperview()
+            addSubview(btn)
+            btn.frame = frame
+            sureBtn = btn
+        }
     }
     
     // MARK: - Func
