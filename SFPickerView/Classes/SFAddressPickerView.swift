@@ -13,6 +13,9 @@ import UIKit
 // 2，支持外部传入数据源（本地文件）
 // 3，模型自定义
 
+public class SFAddressPickerConfig: SFPickerConfig {
+    public var rowHeight: CGFloat = 50
+}
 
 public class SFAddressPickerView: SFPickerView {
         
@@ -56,6 +59,16 @@ public class SFAddressPickerView: SFPickerView {
         super.configUI()
         alertView.contentView = pickerView
         loadAddressData()
+    }
+    public override var config: SFPickerConfig{
+        didSet{
+            /** 说明：
+             * UIPickerView的代理方法rowHeightForComponent，只有在UIPickerView在绘制时才会调用
+             * pickerView.reloadAllComponents()并不会刷新rowHeight
+             */
+            pickerView.frame = CGRect.zero
+            alertView.contentView = pickerView
+        }
     }
     
     /// 从本地plist文件读取地址数据
@@ -160,6 +173,7 @@ public class SFAddressPickerView: SFPickerView {
     
     /// 默认选中值
     private func configSeletedIndexAndValues() {
+        pickerView.reloadAllComponents()
         let provinceIndex = defaultIndexs?[0] ?? 0
         let cityIndex = defaultIndexs?[1] ?? 0
         let areaIndex = defaultIndexs?[2] ?? 0
@@ -200,7 +214,8 @@ extension SFAddressPickerView: UIPickerViewDataSource {
 extension SFAddressPickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return config.rowHeight
+        let c = config as? SFAddressPickerConfig
+        return c?.rowHeight ?? 50
     }
     
     public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {

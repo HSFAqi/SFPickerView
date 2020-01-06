@@ -10,8 +10,7 @@ import UIKit
 
 // TODO:
 
-
-public struct SFPickerConfig {
+public class SFPickerConfig {
     public var superView: UIView?
     public var appearance: SFPickerAlertViewAppearance = SFPickerAlertViewAppearance()
     public var maskBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3)
@@ -20,7 +19,7 @@ public struct SFPickerConfig {
     public var during: TimeInterval = 0.3
     public var alertViewHeight: CGFloat = 300
     
-    public var rowHeight: CGFloat = 50
+    //public var rowHeight: CGFloat = 50
     
     public init() { }
 }

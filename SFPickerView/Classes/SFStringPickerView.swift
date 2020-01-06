@@ -10,7 +10,10 @@ import UIKit
 
 // TODO:
 // 1，多列时的联动
-// 2，动态更改rowHeight
+
+public class SFStringPickerConfig: SFPickerConfig {
+    public var rowHeight: CGFloat = 50
+}
 
 public class SFStringPickerView: SFPickerView {
     
@@ -38,7 +41,12 @@ public class SFStringPickerView: SFPickerView {
     }
     public override var config: SFPickerConfig{
         didSet{
-            pickerView.reloadAllComponents()
+            /** 说明：
+             * UIPickerView的代理方法rowHeightForComponent，只有在UIPickerView在绘制时才会调用
+             * pickerView.reloadAllComponents()并不会刷新rowHeight
+             */
+            pickerView.frame = CGRect.zero
+            alertView.contentView = pickerView
         }
     }
     
@@ -58,7 +66,6 @@ public class SFStringPickerView: SFPickerView {
         isMul = false
         self.title = title
         self.dataSource = dataSource
-        pickerView.reloadAllComponents()
         self.defaultIndexs = [defaultIndex]
         configSeletedIndexAndValues()
         self.isCallbackWhenSelecting = isCallbackWhenSelecting
@@ -122,7 +129,6 @@ public class SFStringPickerView: SFPickerView {
         isMul = true
         self.title = title
         self.dataSource = dataSource
-        pickerView.reloadAllComponents()
         configSeletedIndexAndValues()
         self.isCallbackWhenSelecting = isCallbackWhenSelecting
         self.mulCallbackBlock = callback
@@ -158,6 +164,7 @@ public class SFStringPickerView: SFPickerView {
     // MARK: - Func
     /// 默认选中值
     private func configSeletedIndexAndValues() {
+        pickerView.reloadAllComponents()
         if isMul {
             guard defaultIndexs.count == dataSource.count else {
                 assertionFailure("【多列】请确保defaultIndexs?.count == dataSource.count")
@@ -241,7 +248,8 @@ extension SFStringPickerView: UIPickerViewDataSource {
 extension SFStringPickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return config.rowHeight
+        let c = config as? SFStringPickerConfig
+        return c?.rowHeight ?? 50
     }
     
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {

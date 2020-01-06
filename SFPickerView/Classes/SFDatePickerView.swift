@@ -11,6 +11,10 @@ import UIKit
 // TODO:
 // 1，自定义SFDateMode
 
+public class SFDatePickerConfig: SFPickerConfig {
+    public var rowHeight: CGFloat = 50
+}
+
 public class SFDatePickerView: SFPickerView {
         
     // MARK: - Enum
@@ -54,6 +58,14 @@ public class SFDatePickerView: SFPickerView {
     override func configUI() {
         super.configUI()
         alertView.contentView = systemPickerView
+    }
+    public override var config: SFPickerConfig{
+        didSet{
+            /** 说明：
+             * UIPickerView的代理方法rowHeightForComponent，只有在UIPickerView在绘制时才会调用
+             * pickerView.reloadAllComponents()并不会刷新rowHeight
+             */
+        }
     }
     
     // MARK: - <#name#>
@@ -146,7 +158,8 @@ extension SFDatePickerView: UIPickerViewDataSource {
 extension SFDatePickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return config.rowHeight
+        let c = config as? SFDatePickerConfig
+        return c?.rowHeight ?? 50
     }
     
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
