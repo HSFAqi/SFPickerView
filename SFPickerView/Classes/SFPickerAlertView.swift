@@ -10,21 +10,21 @@ import UIKit
 
 public class SFPickerAlertView: UIView {
     
-    // MARK: - Property
-    public var contentView: UIView! = UIView(){
+    // MARK: - Property(internal)
+    var contentView: UIView! = UIView(){
         willSet{
             contentView.removeFromSuperview()
             addSubview(newValue)
             newValue.frame = CGRect(x: 0, y: self.lineView.frame.maxY, width: self.frame.size.width, height: self.frame.size.height-self.lineView.frame.maxY)
         }
     }
-    public var title: String? {
+    var title: String? {
         willSet{
             titleLabel.text = newValue
         }
     }
-    public var sureBlock: (() -> Void)?
-    public var cancelBlock: (() -> Void)?
+    var sureBlock: (() -> Void)?
+    var cancelBlock: (() -> Void)?
 
     // MARK: - Property(private)
     private lazy var cancelBtn: UIButton = {
@@ -57,7 +57,7 @@ public class SFPickerAlertView: UIView {
     }()
     private lazy var lineView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 240, green: 240, blue: 240, alpha: 1)
+        view.backgroundColor = UIColor(red: 230.00/255.00, green: 230.00/255.00, blue: 230.00/255.00, alpha: 1)
         return view
     }()
     

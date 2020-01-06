@@ -13,13 +13,20 @@ import UIKit
 // 2，降低依赖：移除Snap，改用frame布局
 
 public class SFPickerView: UIView {
+
+    // MARK: - Property(public)
+    public var isMaskEnabled: Bool = true {
+        willSet{
+            maskBackgroundView.isUserInteractionEnabled = newValue
+        }
+    }
     
-    // MARK: - Property
-    public lazy var alertView: SFPickerAlertView = {
+    // MARK: - Property(internal)
+    lazy var alertView: SFPickerAlertView = {
         let view = SFPickerAlertView(frame: self.bounds)
         return view
     }()
-    public var title: String? {
+    var title: String? {
         willSet{
             alertView.title = newValue
         }
@@ -55,6 +62,10 @@ public class SFPickerView: UIView {
         addSubview(alertView)
         maskBackgroundView.frame = self.bounds
         alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: alertViewHeight)
+        alertView.cancelBlock = {
+            [weak self] in
+            self?.dismiss()
+        }
     }
     
     // MARK: - Func

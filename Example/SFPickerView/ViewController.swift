@@ -79,6 +79,7 @@ class ViewController: UIViewController {
                 print("date:\(date)")
                 print("value:\(value)")
             }
+            picker.isMaskEnabled = false
         }
         else if sender.tag == 1 {
             SFDatePickerView.showPickerWithTitle("时间", mode: .time, minDate: nil, maxDate: nil, isCallbackWhenSelecting: true) { (date, value) in
