@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         
         if sender.tag == 0 {
             
-            var config = SFPickerConfig()
+            let config = SFStringPickerConfig()
             var appearance = SFPickerAlertViewAppearance()
             appearance.contentViewBackgroundColor = UIColor.white
             config.appearance = appearance
