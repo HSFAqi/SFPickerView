@@ -22,32 +22,12 @@ class ViewController: UIViewController {
         let dataSource1 = [dataSource0, dataSource0]
         let isCallbackWhenSelecting = true
         
-        let dataSource2 = ["A", "B", "C", "D"]
-        let dataSource3 = ["I", "II", "III", "IIII", "V"]
-        
-        var arr1 = [Any]()
-        for n in dataSource2 {
-            var dic: [String: [String]] = [n: dataSource3]
-            if n == "A" {
-                dic = [n: dataSource0]
-            }
-            if n == "D" {
-                dic = [n: []]
-            }
-            arr1.append(dic)
-        }
-        
-        
         if sender.tag == 0 {
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("【联动】【一维】对象方法", dataSource: arr1, defaultIndexs: [2, 2], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
-                print("indexs:\(indexs)")
-                print("values:\(values)")
+            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
+                print("index:\(index)")
+                print("value:\(value)")
             }
-//            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
-//                print("index:\(index)")
-//                print("value:\(value)")
-//            }
         }
         else if sender.tag == 1 {
             SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
@@ -64,6 +44,54 @@ class ViewController: UIViewController {
         }
         else if sender.tag == 3 {
             SFStringPickerView.showPickerWithTitle("【多列】类方法", dataSource: dataSource1, defaultIndexs: [2, 3], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+                print("indexs:\(indexs)")
+                print("values:\(values)")
+            }
+        }
+        else if sender.tag == 4 {
+            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
+                print("index:\(index)")
+                print("value:\(value)")
+            }
+        }
+        else if sender.tag == 5 {
+            let data = [["0": ["A", "B", "C"]],
+                        ["1": ["@", "#", "$"]],
+                        ["2": ["I", "II", "III"]],
+                        ["3": ["a", "b", "c"]],
+                        ["4": ["个", "十", "百"]],
+                        ["5": ["时", "分", "秒"]]]
+            SFStringPickerView.showPickerWithTitle("【联动】二维", dataSource: data, defaultIndexs: [2, 0], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+                print("indexs:\(indexs)")
+                print("values:\(values)")
+            }
+        }
+        else if sender.tag == 6 {
+            let arr0 = ["🐱", "🐩", "🐷"]
+            let arr1 = ["🐭", "🐒", "🐔"]
+            let arr2 = ["🐂", "🐅", "🐰"]
+            let data = [["0": [["A": arr0], ["B": arr1], ["C": arr2]]],
+                        ["1": [["@": arr0], ["#": arr1], ["$": arr2]]],
+                        ["2": [["I": arr0], ["II": arr1], ["III": arr2]]],
+                        ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
+                        ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
+                        ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
+            SFStringPickerView.showPickerWithTitle("【联动】三维", dataSource: data, defaultIndexs: [2, 0, 2], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+                print("indexs:\(indexs)")
+                print("values:\(values)")
+            }
+        }
+        else if sender.tag == 7 {
+            let arr0 = [["🐱": ["q", "w", "e"]], ["🐩": ["r", "t", "y"]], ["🐷": ["u", "i", "o"]]]
+            let arr1 = [["🐭": ["p", "a", "s"]], ["🐒": ["d", "f", "g"]], ["🐔": ["h", "j", "k"]]]
+            let arr2 = [["🐂": ["l", "z", "x"]], ["🐅": ["c", "v", "b"]], ["🐰": ["n", "m"]]]
+            let data = [["0": [["A": arr0], ["B": arr1], ["C": arr2]]],
+                        ["1": [["@": arr0], ["#": arr1], ["$": arr2]]],
+                        ["2": [["I": arr0], ["II": arr1], ["III": arr2]]],
+                        ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
+                        ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
+                        ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
+            SFStringPickerView.showPickerWithTitle("【联动】四维", dataSource: data, defaultIndexs: [2, 0, 2, 0], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
