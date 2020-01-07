@@ -32,10 +32,12 @@ public class SFPickerView: UIView {
     public var config: SFPickerConfig = SFPickerConfig() {
         willSet{
             if newValue.alertViewHeight != config.alertViewHeight {
-                alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: config.alertViewHeight)
+                alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: newValue.alertViewHeight)
                 let contentView = alertView.contentView
                 alertView.contentView = contentView
             }
+        }
+        didSet{
             customAppearanceSubviews()
         }
     }

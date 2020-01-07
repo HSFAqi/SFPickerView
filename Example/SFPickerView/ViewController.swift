@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         
         if sender.tag == 0 {
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.config.rowHeight = 100
+            picker.config.alertViewHeight = 500
             picker.config.maskBackgroundColor = UIColor.red
             picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
                 print("index:\(index)")
