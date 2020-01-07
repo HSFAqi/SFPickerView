@@ -22,12 +22,32 @@ class ViewController: UIViewController {
         let dataSource1 = [dataSource0, dataSource0]
         let isCallbackWhenSelecting = false
         
+        let dataSource2 = ["A", "B", "C", "D"]
+        let dataSource3 = ["I", "II", "III", "IIII", "V"]
+        
+        var arr1 = [Any]()
+        for n in dataSource2 {
+            var dic: [String: [String]] = [n: dataSource3]
+            if n == "A" {
+                dic = [n: dataSource0]
+            }
+            if n == "D" {
+                dic = [n: []]
+            }
+            arr1.append(dic)
+        }
+        
+        
         if sender.tag == 0 {
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
-                print("index:\(index)")
-                print("value:\(value)")
+            picker.showPickerWithTitle("【联动】【一维】对象方法", dataSource: arr1, defaultIndexs: [2, 2], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+                print("indexs:\(indexs)")
+                print("values:\(values)")
             }
+//            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
+//                print("index:\(index)")
+//                print("value:\(value)")
+//            }
         }
         else if sender.tag == 1 {
             SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
