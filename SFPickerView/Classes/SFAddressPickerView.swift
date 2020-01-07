@@ -13,9 +13,6 @@ import UIKit
 // 2，支持外部传入数据源（本地文件）
 // 3，模型自定义
 
-public class SFAddressPickerConfig: SFPickerConfig {
-    public var rowHeight: CGFloat = 50
-}
 
 public class SFAddressPickerView: SFPickerView {
         
@@ -214,8 +211,7 @@ extension SFAddressPickerView: UIPickerViewDataSource {
 extension SFAddressPickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        let c = config as? SFAddressPickerConfig
-        return c?.rowHeight ?? 50
+        return config.rowHeight
     }
     
     public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {

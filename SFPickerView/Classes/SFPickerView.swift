@@ -19,7 +19,9 @@ public class SFPickerConfig {
     public var during: TimeInterval = 0.3
     public var alertViewHeight: CGFloat = 300
     
-    //public var rowHeight: CGFloat = 50
+    // UIPickerView
+    public var rowHeight: CGFloat = 50
+    public var isCallbackWhenSelecting: Bool = false
     
     public init() { }
 }

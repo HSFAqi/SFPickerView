@@ -11,9 +11,6 @@ import UIKit
 // TODO:
 // 1，自定义SFDateMode
 
-public class SFDatePickerConfig: SFPickerConfig {
-    public var rowHeight: CGFloat = 50
-}
 
 public class SFDatePickerView: SFPickerView {
         
@@ -158,8 +155,7 @@ extension SFDatePickerView: UIPickerViewDataSource {
 extension SFDatePickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        let c = config as? SFDatePickerConfig
-        return c?.rowHeight ?? 50
+        return config.rowHeight
     }
     
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {

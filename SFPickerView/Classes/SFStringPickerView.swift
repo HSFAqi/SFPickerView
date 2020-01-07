@@ -25,10 +25,6 @@ public typealias SFDimensionTwo = [[String: [String]]]
 public typealias SFDimensionThree = [[String: [[String: [String]]]]]
 public typealias SFDimensionFour = [[String: [[String: [[String: [String]]]]]]]
 
-public class SFStringPickerConfig: SFPickerConfig {
-    public var rowHeight: CGFloat = 50
-}
-
 public class SFStringPickerView: SFPickerView {
     
     // MARK: - Property(private)
@@ -38,30 +34,33 @@ public class SFStringPickerView: SFPickerView {
         view.dataSource = self
         return view
     }()
-    private(set) var isMul: Bool = false
-    private(set) var isLinkge: Bool = false // 是否联动
-    private(set) var dataSource = [Any]()
+    
+    private(set) var dataSource = [Any]() // 数据源
     private(set) var linkgeDataSource = [Any]() // 联动模式时使用的数据源
     private(set) var selectedIndexs = [Int]()
     private(set) var selectedValues = [String]()
     private(set) var isCallbackWhenSelecting: Bool = false
     private var callbackBlock: ((Int, String) -> Void)?
     private var mulCallbackBlock: (([Int], [String]) -> Void)?
-    private var isChanged: Bool = false
+    private var isMul: Bool = false // 是否多列
+    private var isLinkge: Bool = false // 是否联动
+    private var isChanged: Bool = false // 是否更改
     
     // MARK: - ConfigUI
     override func configUI() {
         super.configUI()
         alertView.contentView = pickerView
     }
-    public override var config: SFPickerConfig{
-        didSet{
+    public override var config: SFPickerConfig {
+        willSet{
             /** 说明：
              * UIPickerView的代理方法rowHeightForComponent，只有在UIPickerView在绘制时才会调用
              * pickerView.reloadAllComponents()并不会刷新rowHeight
              */
-            pickerView.frame = CGRect.zero
-            alertView.contentView = pickerView
+            if newValue.rowHeight != config.rowHeight {
+                pickerView.frame = CGRect.zero
+                alertView.contentView = pickerView
+            }
         }
     }
     
@@ -113,8 +112,6 @@ public class SFStringPickerView: SFPickerView {
             ws.dismiss()
         }
     }
-    
-    
     
     // MARK: - 多列+联动
     /// show（多列，类方法）
@@ -268,7 +265,6 @@ public class SFStringPickerView: SFPickerView {
         }
     }
     
-    
     // MARK: - Func
     /// 默认选中值
     private func configSeletedIndexAndValues() {
@@ -411,15 +407,13 @@ extension SFStringPickerView: UIPickerViewDataSource {
         }
         return values.count
     }
-    
 }
 
 // MARK: - UIPickerViewDelegate
 extension SFStringPickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        let c = config as? SFStringPickerConfig
-        return c?.rowHeight ?? 50
+        return config.rowHeight
     }
     
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
