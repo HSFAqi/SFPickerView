@@ -303,20 +303,21 @@ public class SFStringPickerView: SFPickerView {
             pickerView.selectRow(defaultIndex, inComponent: idx, animated: true)
         }
     }
-    
-    func updateLinkgeDataWhenSelectRow(_ row: Int, component: Int) {
+    /// 【联动】刷新数据
+    func updateLinkgeDataWhenSelect(component: Int) {
         if (selectedIndexs.count-1) >= (component+1) {
             let range = component+1...selectedIndexs.count-1
             selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
             getLinkgeData()
-            for i in range {
-                let row = selectedIndexs[i]
-                pickerView.reloadComponent(i)
-                pickerView.selectRow(row, inComponent: i, animated: true)
+            for c in range {
+                let row = selectedIndexs[c]
+                pickerView.reloadComponent(c)
+                pickerView.selectRow(row, inComponent: c, animated: true)
+                makeSureSelectedValuesInComponent(c)
             }
         }
     }
-    /// 【联动】刷新数据
+    /// 【联动】数据结构转换
     func getLinkgeData() {
         // 一维
         if let data = dataSource as? [String] {
@@ -445,11 +446,22 @@ extension SFStringPickerView: UIPickerViewDelegate {
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedIndexs[component] = row
         if isLinkge {
-            updateLinkgeDataWhenSelectRow(row, component: component)
+            updateLinkgeDataWhenSelect(component: component)
         }
         isChanged = true
+        makeSureSelectedValuesInComponent(component)
+        if let callback = callbackBlock, self.isCallbackWhenSelecting == true {
+            callback(selectedIndexs[0], selectedValues[0])
+        }
+        if let mulCallback = mulCallbackBlock, self.isCallbackWhenSelecting == true {
+            mulCallback(selectedIndexs, selectedValues)
+        }
+    }
+    
+    /// 确保选中的values
+    func makeSureSelectedValuesInComponent(_ component: Int) {
         let data = isLinkge ? linkgeDataSource : dataSource
-        var values: [String]!
+        var values = [String]()
         if isMul {
             if let components = (data as? [[String]]) {
                 let rows = components[component]
@@ -460,12 +472,11 @@ extension SFStringPickerView: UIPickerViewDelegate {
                 values = rows
             }
         }
-        selectedValues[component] = values[row]
-        if let callback = callbackBlock, self.isCallbackWhenSelecting == true {
-            callback(selectedIndexs[0], selectedValues[0])
-        }
-        if let mulCallback = mulCallbackBlock, self.isCallbackWhenSelecting == true {
-            mulCallback(selectedIndexs, selectedValues)
+        let index = selectedIndexs[component]
+        if values.count > 0, values.count >= index {
+            selectedValues[component] = values[index]
+        }else{
+            selectedValues[component] = ""
         }
     }
 }

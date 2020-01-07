@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     @IBAction func stringAction(_ sender: UIButton) {
         let dataSource0 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         let dataSource1 = [dataSource0, dataSource0]
-        let isCallbackWhenSelecting = false
+        let isCallbackWhenSelecting = true
         
         let dataSource2 = ["A", "B", "C", "D"]
         let dataSource3 = ["I", "II", "III", "IIII", "V"]
