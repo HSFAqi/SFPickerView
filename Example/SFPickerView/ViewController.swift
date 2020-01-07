@@ -20,38 +20,38 @@ class ViewController: UIViewController {
     @IBAction func stringAction(_ sender: UIButton) {
         let dataSource0 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         let dataSource1 = [dataSource0, dataSource0]
-        let isCallbackWhenSelecting = true
         
         if sender.tag == 0 {
             let picker = SFStringPickerView(frame: CGRect.zero)
             picker.config.alertViewHeight = 500
+            picker.config.isCallbackWhenSelecting = true
             picker.config.maskBackgroundColor = UIColor.red
-            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
+            picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
         }
         else if sender.tag == 1 {
-            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
+            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
         }
         else if sender.tag == 2 {
             let picker = SFStringPickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("【多列】对象方法", dataSource: dataSource1, defaultIndexs: [2, 3], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+            picker.showPickerWithTitle("【多列】对象方法", dataSource: dataSource1, defaultIndexs: [2, 3], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 3 {
-            SFStringPickerView.showPickerWithTitle("【多列】类方法", dataSource: dataSource1, defaultIndexs: [2, 3], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+            SFStringPickerView.showPickerWithTitle("【多列】类方法", dataSource: dataSource1, defaultIndexs: [2, 3], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 4 {
-            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, isCallbackWhenSelecting: isCallbackWhenSelecting) { (index, value) in
+            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
@@ -63,7 +63,7 @@ class ViewController: UIViewController {
                         ["3": ["a", "b", "c"]],
                         ["4": ["个", "十", "百"]],
                         ["5": ["时", "分", "秒"]]]
-            SFStringPickerView.showPickerWithTitle("【联动】二维", dataSource: data, defaultIndexs: [2, 0], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+            SFStringPickerView.showPickerWithTitle("【联动】二维", dataSource: data, defaultIndexs: [2, 0], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
@@ -78,7 +78,7 @@ class ViewController: UIViewController {
                         ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
                         ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
                         ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
-            SFStringPickerView.showPickerWithTitle("【联动】三维", dataSource: data, defaultIndexs: [2, 0, 2], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+            SFStringPickerView.showPickerWithTitle("【联动】三维", dataSource: data, defaultIndexs: [2, 0, 2], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
@@ -93,7 +93,7 @@ class ViewController: UIViewController {
                         ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
                         ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
                         ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
-            SFStringPickerView.showPickerWithTitle("【联动】四维", dataSource: data, defaultIndexs: [2, 0, 2, 0], isCallbackWhenSelecting: isCallbackWhenSelecting) { (indexs, values) in
+            SFStringPickerView.showPickerWithTitle("【联动】四维", dataSource: data, defaultIndexs: [2, 0, 2, 0], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }

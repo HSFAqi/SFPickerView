@@ -72,9 +72,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, isCallbackWhenSelecting: Bool, callback: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, config: config, callback: callback)
         return pickerView
     }
     /// show（单列，对象方法）
@@ -84,7 +84,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - defaultIndex: 默认选中项
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, isCallbackWhenSelecting: Bool, callback: @escaping ((Int, String) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
             return
@@ -94,7 +94,9 @@ public class SFStringPickerView: SFPickerView {
         self.dataSource = dataSource
         self.selectedIndexs = [defaultIndex]
         configSeletedIndexAndValues()
-        config.isCallbackWhenSelecting = isCallbackWhenSelecting
+        if let c = config {
+            self.config = c
+        }
         self.callbackBlock = callback
         isChanged = false
         show()
@@ -121,9 +123,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionMul, defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionMul, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// show（二维联动，类方法）
@@ -134,9 +136,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionTwo, defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionTwo, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     
@@ -148,9 +150,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionThree, defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionThree, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     
@@ -162,9 +164,9 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionFour, defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionFour, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, isCallbackWhenSelecting: isCallbackWhenSelecting, callback: callback)
+        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// show（联动+多列，对象方法）
@@ -174,7 +176,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - defaultIndexs: 默认选中项
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, dataSource: [Any], defaultIndexs: [Int]?, isCallbackWhenSelecting: Bool, callback: @escaping (([Int], [String]) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, dataSource: [Any], defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空")
             return
@@ -247,7 +249,9 @@ public class SFStringPickerView: SFPickerView {
         isMul = true
         self.title = title
         configSeletedIndexAndValues()
-        config.isCallbackWhenSelecting = isCallbackWhenSelecting
+        if let c = config {
+            self.config = c
+        }
         self.mulCallbackBlock = callback
         show()
         self.alertView.sureBlock = {
