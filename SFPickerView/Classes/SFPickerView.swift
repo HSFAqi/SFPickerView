@@ -10,7 +10,7 @@ import UIKit
 
 // TODO:
 
-public class SFPickerConfig {
+public struct SFPickerConfig {
     public var superView: UIView?
     public var appearance: SFPickerAlertViewAppearance = SFPickerAlertViewAppearance()
     public var maskBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3)
@@ -31,7 +31,12 @@ public class SFPickerView: UIView {
     // MARK: - Property(public)
     public var config: SFPickerConfig = SFPickerConfig() {
         willSet{
-            configUI()
+            if newValue.alertViewHeight != config.alertViewHeight {
+                alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: config.alertViewHeight)
+                let contentView = alertView.contentView
+                alertView.contentView = contentView
+            }
+            customAppearanceSubviews()
         }
     }
     
@@ -55,6 +60,7 @@ public class SFPickerView: UIView {
         view.alpha = 0
         return view
     }()
+    public var isShow: Bool = false
     
     // MARK: - Initial
     public override init(frame: CGRect) {
@@ -71,15 +77,21 @@ public class SFPickerView: UIView {
         addToView(nil)
         addSubview(maskBackgroundView)
         addSubview(alertView)
-        maskBackgroundView.backgroundColor = config.maskBackgroundColor
-        maskBackgroundView.isUserInteractionEnabled = config.isMaskEnabled
-        maskBackgroundView.frame = self.bounds
-        alertView.appearance = config.appearance
-        alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: config.alertViewHeight)
+        customFrameSubviews()
+        customAppearanceSubviews()
         alertView.cancelBlock = {
             [weak self] in
             self?.dismiss()
         }
+    }
+    private func customFrameSubviews() {
+        maskBackgroundView.frame = self.bounds
+        alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: config.alertViewHeight)
+    }
+    private func customAppearanceSubviews() {
+        maskBackgroundView.backgroundColor = config.maskBackgroundColor
+        maskBackgroundView.isUserInteractionEnabled = config.isMaskEnabled
+        alertView.appearance = config.appearance
     }
     
     // MARK: - Func
@@ -94,14 +106,12 @@ public class SFPickerView: UIView {
         if config.isAnimated {
             UIView.animate(withDuration: config.during) {
                 [weak self] in
-                guard let weakSelf = self else { return }
-                weakSelf.maskBackgroundView.alpha = 1
-                weakSelf.alertView.frame = CGRect(x: 0, y: weakSelf.frame.size.height-weakSelf.config.alertViewHeight, width: weakSelf.frame.size.width, height: weakSelf.config.alertViewHeight)
+                self?.updateFrameForAlertView(isShow: false)
             }
         }else{
-            self.maskBackgroundView.alpha = 1
-            self.alertView.frame = CGRect(x: 0, y: self.frame.size.height-self.config.alertViewHeight, width: self.frame.size.width, height: self.config.alertViewHeight)
+            updateFrameForAlertView(isShow: false)
         }
+        isShow = true
     }
     
     /// dismiss
@@ -109,22 +119,31 @@ public class SFPickerView: UIView {
         if config.isAnimated {
             UIView.animate(withDuration: config.during, animations: {
                 [weak self] in
-                guard let weakSelf = self else { return }
-                weakSelf.maskBackgroundView.alpha = 0
-                weakSelf.alertView.frame = CGRect(x: 0, y: weakSelf.frame.size.height, width: weakSelf.frame.size.width, height: weakSelf.config.alertViewHeight)
+                self?.updateFrameForAlertView(isShow: true)
             }) {
                 [weak self] (isFinished) in
                 self?.removeFromSuperview()
             }
         }else{
+            updateFrameForAlertView(isShow: true)
+            self.removeFromSuperview()
+        }
+        isShow = false
+    }
+    
+    /// 更新frame
+    func updateFrameForAlertView(isShow: Bool) {
+        if isShow {
             self.maskBackgroundView.alpha = 0
             self.alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: self.config.alertViewHeight)
-            self.removeFromSuperview()
+        }else{
+            self.maskBackgroundView.alpha = 1
+            self.alertView.frame = CGRect(x: 0, y: self.frame.size.height-self.config.alertViewHeight, width: self.frame.size.width, height: self.config.alertViewHeight)
         }
     }
     
     /// 父视图
-    public func addToView(_ view: UIView?) {
+    private func addToView(_ view: UIView?) {
         if let v = view {
             self.frame = v.bounds
             v.addSubview(self)

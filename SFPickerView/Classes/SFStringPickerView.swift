@@ -39,7 +39,6 @@ public class SFStringPickerView: SFPickerView {
     private(set) var linkgeDataSource = [Any]() // 联动模式时使用的数据源
     private(set) var selectedIndexs = [Int]()
     private(set) var selectedValues = [String]()
-    private(set) var isCallbackWhenSelecting: Bool = false
     private var callbackBlock: ((Int, String) -> Void)?
     private var mulCallbackBlock: (([Int], [String]) -> Void)?
     private var isMul: Bool = false // 是否多列
@@ -95,7 +94,7 @@ public class SFStringPickerView: SFPickerView {
         self.dataSource = dataSource
         self.selectedIndexs = [defaultIndex]
         configSeletedIndexAndValues()
-        self.isCallbackWhenSelecting = isCallbackWhenSelecting
+        config.isCallbackWhenSelecting = isCallbackWhenSelecting
         self.callbackBlock = callback
         isChanged = false
         show()
@@ -104,7 +103,7 @@ public class SFStringPickerView: SFPickerView {
             guard let ws = self else {
                 return
             }
-            if !ws.isChanged || !ws.isCallbackWhenSelecting {
+            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
                 if let callback = ws.callbackBlock {
                     callback(ws.selectedIndexs[0], ws.selectedValues[0])
                 }
@@ -248,7 +247,7 @@ public class SFStringPickerView: SFPickerView {
         isMul = true
         self.title = title
         configSeletedIndexAndValues()
-        self.isCallbackWhenSelecting = isCallbackWhenSelecting
+        config.isCallbackWhenSelecting = isCallbackWhenSelecting
         self.mulCallbackBlock = callback
         show()
         self.alertView.sureBlock = {
@@ -256,7 +255,7 @@ public class SFStringPickerView: SFPickerView {
             guard let ws = self else {
                 return
             }
-            if !ws.isChanged || !ws.isCallbackWhenSelecting {
+            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
                 if let callback = ws.mulCallbackBlock {
                     callback(ws.selectedIndexs, ws.selectedValues)
                 }
@@ -441,10 +440,10 @@ extension SFStringPickerView: UIPickerViewDelegate {
         }
         isChanged = true
         makeSureSelectedValuesInComponent(component)
-        if let callback = callbackBlock, self.isCallbackWhenSelecting == true {
+        if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
             callback(selectedIndexs[0], selectedValues[0])
         }
-        if let mulCallback = mulCallbackBlock, self.isCallbackWhenSelecting == true {
+        if let mulCallback = mulCallbackBlock, config.isCallbackWhenSelecting == true {
             mulCallback(selectedIndexs, selectedValues)
         }
     }
