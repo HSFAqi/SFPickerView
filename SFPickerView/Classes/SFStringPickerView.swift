@@ -9,7 +9,6 @@
 import UIKit
 
 // TODO:
-// 1，多列时的联动
 
 /**
  * 类型
@@ -33,6 +32,9 @@ public class SFStringPickerView: SFPickerView {
         case two(data: SFDimensionTwo)
         case three(data: SFDimensionThree)
         case four(data: SFDimensionFour)
+        
+        // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
+        case any(data: [Any])
     }
     
     // MARK: - Property(private)
@@ -144,8 +146,32 @@ public class SFStringPickerView: SFPickerView {
     ///   - config: 配置
     ///   - callback: 回调
     public func showPickerWithTitle(_ title: String?, mode: SFDimensionMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
-        
+        var usefulMode = mode
         switch mode {
+        case .any(data: let data):
+            if let d = data as? SFDimensionSingle {
+                usefulMode = .single(data: d)
+            }
+            else if let d = data as? SFDimensionMul {
+                usefulMode = .mul(data: d)
+            }
+            else if let d = data as? SFDimensionTwo {
+                usefulMode = .two(data: d)
+            }
+            else if let d = data as? SFDimensionThree {
+                usefulMode = .three(data: d)
+            }
+            else if let d = data as? SFDimensionFour {
+                usefulMode = .four(data: d)
+            }
+            else {
+                assertionFailure("请确保data的数据类型")
+            }
+            break
+        default:
+            usefulMode = mode
+        }
+        switch usefulMode {
         case .single(data: let data):
             self.dataSource = data
             isLinkge = false
@@ -219,6 +245,8 @@ public class SFStringPickerView: SFPickerView {
             }else{
                 self.selectedIndexs = [0, 0, 0, 0]
             }
+            break
+        case .any(data: let _):
             break
         }
         guard self.dataSource.count > 0 else {

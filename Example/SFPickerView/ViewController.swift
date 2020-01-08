@@ -93,7 +93,7 @@ class ViewController: UIViewController {
                         ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
                         ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
                         ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
-            SFStringPickerView.showPickerWithTitle("【联动】四维", mode: .four(data: data), defaultIndexs: [2, 0, 2, 0], config: nil) { (indexs, values) in
+            SFStringPickerView.showPickerWithTitle("【联动】四维", mode: .any(data: data), defaultIndexs: [2, 0, 2, 0], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
