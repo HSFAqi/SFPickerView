@@ -9,6 +9,7 @@
 import UIKit
 
 // TODO:
+// 【联动】传入数据模型
 
 /**
  * 类型
@@ -35,6 +36,34 @@ public class SFStringPickerView: SFPickerView {
         
         // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
         case any(data: [Any])
+        func getUsefulMode() -> Self {
+            var usefulMode = self
+            switch self {
+            case .any(data: let data):
+                if let d = data as? SFDimensionSingle {
+                    usefulMode = .single(data: d)
+                }
+                else if let d = data as? SFDimensionMul {
+                    usefulMode = .mul(data: d)
+                }
+                else if let d = data as? SFDimensionTwo {
+                    usefulMode = .two(data: d)
+                }
+                else if let d = data as? SFDimensionThree {
+                    usefulMode = .three(data: d)
+                }
+                else if let d = data as? SFDimensionFour {
+                    usefulMode = .four(data: d)
+                }
+                else {
+                    assertionFailure("请确保data的数据类型")
+                }
+                break
+            default:
+                usefulMode = self
+            }
+            return usefulMode
+        }
     }
     
     // MARK: - Property(private)
@@ -146,31 +175,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - config: 配置
     ///   - callback: 回调
     public func showPickerWithTitle(_ title: String?, mode: SFDimensionMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
-        var usefulMode = mode
-        switch mode {
-        case .any(data: let data):
-            if let d = data as? SFDimensionSingle {
-                usefulMode = .single(data: d)
-            }
-            else if let d = data as? SFDimensionMul {
-                usefulMode = .mul(data: d)
-            }
-            else if let d = data as? SFDimensionTwo {
-                usefulMode = .two(data: d)
-            }
-            else if let d = data as? SFDimensionThree {
-                usefulMode = .three(data: d)
-            }
-            else if let d = data as? SFDimensionFour {
-                usefulMode = .four(data: d)
-            }
-            else {
-                assertionFailure("请确保data的数据类型")
-            }
-            break
-        default:
-            usefulMode = mode
-        }
+        let usefulMode = mode.getUsefulMode()
         switch usefulMode {
         case .single(data: let data):
             self.dataSource = data
