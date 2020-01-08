@@ -14,7 +14,7 @@ import UIKit
 /**
  * 类型
  * 单列：[String]
- * 多列：[[String]]
+ * 多列（无联动效果）：[[String]] 
  * 二维联动：[[String: [String]]]
  * 三维联动：[[String: [[String: [String]]]]]
  * 四维联动：[[String: [[String: [[String: [String]]]]]]]
@@ -27,6 +27,14 @@ public typealias SFDimensionFour = [[String: [[String: [[String: [String]]]]]]]
 
 public class SFStringPickerView: SFPickerView {
     
+    public enum SFDimensionMode {
+        case single(data: SFDimensionSingle)
+        case mul(data: SFDimensionMul)
+        case two(data: SFDimensionTwo)
+        case three(data: SFDimensionThree)
+        case four(data: SFDimensionFour)
+    }
+    
     // MARK: - Property(private)
     private lazy var pickerView: UIPickerView = {
         let view = UIPickerView()
@@ -37,10 +45,10 @@ public class SFStringPickerView: SFPickerView {
     
     private(set) var dataSource = [Any]() // 数据源
     private(set) var linkgeDataSource = [Any]() // 联动模式时使用的数据源
-    private(set) var selectedIndexs = [Int]()
-    private(set) var selectedValues = [String]()
-    private var callbackBlock: ((Int, String) -> Void)?
-    private var mulCallbackBlock: (([Int], [String]) -> Void)?
+    private(set) var selectedIndexs = [Int]() // 选中Index
+    private(set) var selectedValues = [String]() // 选中Value
+    private var callbackBlock: ((Int, String) -> Void)? // 单列回调
+    private var mulCallbackBlock: (([Int], [String]) -> Void)? // 多列回调
     private var isMul: Bool = false // 是否多列
     private var isLinkge: Bool = false // 是否联动
     private var isChanged: Bool = false // 是否更改
@@ -64,7 +72,7 @@ public class SFStringPickerView: SFPickerView {
     }
     
     // MARK: - 单列
-    /// show（单列，类方法）
+    /// 单列，类方法（单列时推荐使用）
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
@@ -77,12 +85,12 @@ public class SFStringPickerView: SFPickerView {
         pickerView.showPickerWithTitle(title, dataSource: dataSource, config: config, callback: callback)
         return pickerView
     }
-    /// show（单列，对象方法）
+    /// 单列，对象方法（单列时推荐使用）
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
     ///   - defaultIndex: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - config: 配置
     ///   - callback: 回调
     public func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
@@ -114,77 +122,48 @@ public class SFStringPickerView: SFPickerView {
         }
     }
     
-    // MARK: - 多列+联动
-    /// show（多列，类方法）
+    // MARK: - 单列+多列+联动
+    /// 单列+多列+联动，类方法
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
-    ///   - defaultIndexs: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - defaultIndex: 默认选中项
+    ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionMul, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, mode: SFDimensionMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
-    /// show（二维联动，类方法）
+    /// 单列+多列+联动，对象方法
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
-    ///   - defaultIndexs: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - defaultIndex: 默认选中项
+    ///   - config: 配置
     ///   - callback: 回调
-    @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionTwo, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
-        let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
-        return pickerView
-    }
-    
-    /// show（三维联动，类方法）
-    /// - Parameters:
-    ///   - title: 标题
-    ///   - dataSource: 数据源
-    ///   - defaultIndexs: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
-    ///   - callback: 回调
-    @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionThree, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
-        let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
-        return pickerView
-    }
-    
-    /// show（四维联动，类方法）
-    /// - Parameters:
-    ///   - title: 标题
-    ///   - dataSource: 数据源
-    ///   - defaultIndexs: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
-    ///   - callback: 回调
-    @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionFour, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
-        let pickerView = SFStringPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
-        return pickerView
-    }
-    /// show（联动+多列，对象方法）
-    /// - Parameters:
-    ///   - title: 标题
-    ///   - dataSource: 数据源
-    ///   - defaultIndexs: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
-    ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, dataSource: [Any], defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
-        guard dataSource.count > 0 else {
-            assertionFailure("dataSource不能为空")
-            return
-        }
-        // 多列
-        if let data = dataSource as? SFDimensionMul {
+    public func showPickerWithTitle(_ title: String?, mode: SFDimensionMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
+        
+        switch mode {
+        case .single(data: let data):
             self.dataSource = data
             isLinkge = false
+            isMul = false
+            if let indexs = defaultIndexs {
+                guard defaultIndexs?.count == 1 else {
+                    assertionFailure("【单列】请确保defaultIndexs?.count == 1")
+                    return
+                }
+                self.selectedIndexs = indexs
+            }else{
+                self.selectedIndexs = [0]
+            }
+            break
+        case .mul(data: let data):
+            self.dataSource = data
+            isLinkge = false
+            isMul = true
             if let indexs = defaultIndexs {
                 guard defaultIndexs?.count == dataSource.count else {
                     assertionFailure("【多列】请确保defaultIndexs?.count == dataSource.count")
@@ -193,16 +172,16 @@ public class SFStringPickerView: SFPickerView {
                 self.selectedIndexs = indexs
             }else{
                 var customIndexs = [Int]()
-                for _ in dataSource {
+                for _ in data {
                     customIndexs.append(0)
                 }
                 self.selectedIndexs = customIndexs
             }
-        }
-        // 二维联动
-        else if let data = dataSource as? SFDimensionTwo {
+            break
+        case .two(data: let data):
             self.dataSource = data
             isLinkge = true
+            isMul = true
             if let indexs = defaultIndexs {
                 guard indexs.count == 2 else {
                     assertionFailure("【联动】【二维】请确保defaultIndexs?.count == 2")
@@ -212,11 +191,11 @@ public class SFStringPickerView: SFPickerView {
             }else{
                 self.selectedIndexs = [0, 0]
             }
-        }
-        // 三维联动
-        else if let data = dataSource as? SFDimensionThree {
+            break
+        case .three(data: let data):
             self.dataSource = data
             isLinkge = true
+            isMul = true
             if let indexs = defaultIndexs {
                 guard indexs.count == 3 else {
                     assertionFailure("【联动】【三维】请确保defaultIndexs?.count == 3")
@@ -226,11 +205,11 @@ public class SFStringPickerView: SFPickerView {
             }else{
                 self.selectedIndexs = [0, 0, 0]
             }
-        }
-        // 四维联动
-        else if let data = dataSource as? SFDimensionFour {
+            break
+        case .four(data: let data):
             self.dataSource = data
             isLinkge = true
+            isMul = true
             if let indexs = defaultIndexs {
                 guard indexs.count == 4 else {
                     assertionFailure("【联动】【四维】请确保defaultIndexs?.count == 4")
@@ -240,14 +219,16 @@ public class SFStringPickerView: SFPickerView {
             }else{
                 self.selectedIndexs = [0, 0, 0, 0]
             }
+            break
         }
-        else{
-            assertionFailure("本方法仅支持【联动】和【多列】，请传入对应的数据类型")
+        guard self.dataSource.count > 0 else {
+            assertionFailure("dataSource不能为空")
             return
         }
-        getLinkgeData()
-        isMul = true
         self.title = title
+        if isLinkge {
+            getLinkgeData()
+        }
         configSeletedIndexAndValues()
         if let c = config {
             self.config = c
@@ -300,20 +281,7 @@ public class SFStringPickerView: SFPickerView {
             pickerView.selectRow(defaultIndex, inComponent: idx, animated: true)
         }
     }
-    /// 【联动】刷新数据
-    func updateLinkgeDataWhenSelect(component: Int) {
-        if (selectedIndexs.count-1) >= (component+1) {
-            let range = component+1...selectedIndexs.count-1
-            selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
-            getLinkgeData()
-            for c in range {
-                let row = selectedIndexs[c]
-                pickerView.reloadComponent(c)
-                pickerView.selectRow(row, inComponent: c, animated: true)
-                makeSureSelectedValuesInComponent(c)
-            }
-        }
-    }
+    
     /// 【联动】数据结构转换
     func getLinkgeData() {
         // 一维
@@ -452,6 +420,20 @@ extension SFStringPickerView: UIPickerViewDelegate {
         }
     }
     
+    /// 【联动】刷新数据
+    func updateLinkgeDataWhenSelect(component: Int) {
+        if (selectedIndexs.count-1) >= (component+1) {
+            let range = component+1...selectedIndexs.count-1
+            selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
+            getLinkgeData()
+            for c in range {
+                let row = selectedIndexs[c]
+                pickerView.reloadComponent(c)
+                pickerView.selectRow(row, inComponent: c, animated: true)
+                makeSureSelectedValuesInComponent(c)
+            }
+        }
+    }
     /// 确保选中的values
     func makeSureSelectedValuesInComponent(_ component: Int) {
         let data = isLinkge ? linkgeDataSource : dataSource
