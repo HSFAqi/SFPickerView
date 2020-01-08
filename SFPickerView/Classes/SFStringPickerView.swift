@@ -11,60 +11,48 @@ import UIKit
 // TODO:
 // 【联动】传入数据模型
 
-/**
- * 类型
- * 单列：[String]
- * 多列（无联动效果）：[[String]] 
- * 二维联动：[[String: [String]]]
- * 三维联动：[[String: [[String: [String]]]]]
- * 四维联动：[[String: [[String: [[String: [String]]]]]]]
- */
-public typealias SFDimensionSingle = [String]
-public typealias SFDimensionMul = [[String]]
-public typealias SFDimensionTwo = [[String: [String]]]
-public typealias SFDimensionThree = [[String: [[String: [String]]]]]
-public typealias SFDimensionFour = [[String: [[String: [[String: [String]]]]]]]
+public typealias SFStringSingleData = [String]
+public typealias SFStringMulData = [[String]]
+public typealias SFStringLinkgeData = [SFPickerModelProtocol]
+
+public protocol SFPickerModelProtocol {
+    var code: String? {get set}
+    var name: String? {get set}
+    var nextList: [Any]? {get set}
+}
+
+public enum SFStringMode {
+    case single(data: SFStringSingleData)
+    case mul(data: SFStringMulData)
+    case linkge(data: SFStringLinkgeData)
+    
+    // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
+    case any(data: [Any])
+    func getUsefulMode() -> Self {
+        var usefulMode = self
+        switch self {
+        case .any(data: let data):
+            if let d = data as? SFStringSingleData {
+                usefulMode = .single(data: d)
+            }
+            else if let d = data as? SFStringMulData {
+                usefulMode = .mul(data: d)
+            }
+            else if let d = data as? SFStringLinkgeData {
+                usefulMode = .linkge(data: d)
+            }
+            else {
+                assertionFailure("请确保data的数据类型")
+            }
+            break
+        default:
+            usefulMode = self
+        }
+        return usefulMode
+    }
+}
 
 public class SFStringPickerView: SFPickerView {
-    
-    public enum SFDimensionMode {
-        case single(data: SFDimensionSingle)
-        case mul(data: SFDimensionMul)
-        case two(data: SFDimensionTwo)
-        case three(data: SFDimensionThree)
-        case four(data: SFDimensionFour)
-        
-        // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
-        case any(data: [Any])
-        func getUsefulMode() -> Self {
-            var usefulMode = self
-            switch self {
-            case .any(data: let data):
-                if let d = data as? SFDimensionSingle {
-                    usefulMode = .single(data: d)
-                }
-                else if let d = data as? SFDimensionMul {
-                    usefulMode = .mul(data: d)
-                }
-                else if let d = data as? SFDimensionTwo {
-                    usefulMode = .two(data: d)
-                }
-                else if let d = data as? SFDimensionThree {
-                    usefulMode = .three(data: d)
-                }
-                else if let d = data as? SFDimensionFour {
-                    usefulMode = .four(data: d)
-                }
-                else {
-                    assertionFailure("请确保data的数据类型")
-                }
-                break
-            default:
-                usefulMode = self
-            }
-            return usefulMode
-        }
-    }
     
     // MARK: - Property(private)
     private lazy var pickerView: UIPickerView = {
@@ -111,7 +99,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFStringSingleData, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, dataSource: dataSource, config: config, callback: callback)
         return pickerView
@@ -123,7 +111,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, dataSource: SFDimensionSingle, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, dataSource: SFStringSingleData, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
             return
@@ -162,7 +150,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, mode: SFDimensionMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
+    public class func showPickerWithTitle(_ title: String?, mode: SFStringMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
@@ -174,7 +162,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, mode: SFDimensionMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, mode: SFStringMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
         let usefulMode = mode.getUsefulMode()
         switch usefulMode {
         case .single(data: let data):
@@ -209,49 +197,16 @@ public class SFStringPickerView: SFPickerView {
                 self.selectedIndexs = customIndexs
             }
             break
-        case .two(data: let data):
+        case .linkge(data: let data):
             self.dataSource = data
             isLinkge = true
             isMul = true
-            if let indexs = defaultIndexs {
-                guard indexs.count == 2 else {
-                    assertionFailure("【联动】【二维】请确保defaultIndexs?.count == 2")
-                    return
-                }
-                self.selectedIndexs = indexs
-            }else{
-                self.selectedIndexs = [0, 0]
+            if let data = self.dataSource as? SFStringLinkgeData {
+                getLinkgeDataWith(data, component: 0)
+                self.linkgeDataSource.reverse()
             }
             break
-        case .three(data: let data):
-            self.dataSource = data
-            isLinkge = true
-            isMul = true
-            if let indexs = defaultIndexs {
-                guard indexs.count == 3 else {
-                    assertionFailure("【联动】【三维】请确保defaultIndexs?.count == 3")
-                    return
-                }
-                self.selectedIndexs = indexs
-            }else{
-                self.selectedIndexs = [0, 0, 0]
-            }
-            break
-        case .four(data: let data):
-            self.dataSource = data
-            isLinkge = true
-            isMul = true
-            if let indexs = defaultIndexs {
-                guard indexs.count == 4 else {
-                    assertionFailure("【联动】【四维】请确保defaultIndexs?.count == 4")
-                    return
-                }
-                self.selectedIndexs = indexs
-            }else{
-                self.selectedIndexs = [0, 0, 0, 0]
-            }
-            break
-        case .any(data: let _):
+        case .any(data: _):
             break
         }
         guard self.dataSource.count > 0 else {
@@ -259,9 +214,6 @@ public class SFStringPickerView: SFPickerView {
             return
         }
         self.title = title
-        if isLinkge {
-            getLinkgeData()
-        }
         configSeletedIndexAndValues()
         if let c = config {
             self.config = c
@@ -316,78 +268,26 @@ public class SFStringPickerView: SFPickerView {
     }
     
     /// 【联动】数据结构转换
-    func getLinkgeData() {
-        // 一维
-        if let data = dataSource as? [String] {
-            self.linkgeDataSource = [data]
+    public func getLinkgeDataWith(_ data: SFStringLinkgeData, component: Int) {
+        var nameArr = [String]()
+        var index = 0
+        if self.selectedIndexs.count > component, self.selectedIndexs.count > 0 {
+            index = self.selectedIndexs[component]
+        }else{
+            index = 0
+            self.selectedIndexs.append(index)
         }
-        // 二维
-        else if let data0 = dataSource as? [[String: [String]]] {
-            var arr0 = [String]()
-            var arr1 = [String]()
-            for (idx0, dic0) in data0.enumerated() {
-                let key0 = dic0.keys.first!
-                arr0.append(key0)
-                if idx0 == self.selectedIndexs[0] {
-                    let value = dic0[key0]!
-                    arr1 = value
+        for (idx, model) in data.enumerated() {
+            nameArr.append(model.name ?? "")
+            if idx == index {
+                if let nextList = model.nextList as? SFStringLinkgeData {
+                    self.getLinkgeDataWith(nextList, component: component+1)
                 }
             }
-            self.linkgeDataSource = [arr0, arr1]
         }
-        // 三维
-        else if let data0 = dataSource as? [[String: [[String: [String]]]]] {
-            var arr0 = [String]()
-            var arr1 = [String]()
-            var arr2 = [String]()
-            for (idx0, dic0) in data0.enumerated() {
-                let key0 = dic0.keys.first!
-                arr0.append(key0)
-                if idx0 == self.selectedIndexs[0] {
-                    let data1 = dic0[key0]!
-                    for (idx1, dic1) in data1.enumerated() {
-                        let key1 = dic1.keys.first!
-                        arr1.append(key1)
-                        if idx1 == self.selectedIndexs[1] {
-                            let value = dic1[key1]!
-                            arr2 = value
-                        }
-                    }
-                }
-            }
-            self.linkgeDataSource = [arr0, arr1, arr2]
-        }
-        // 四维
-        else if let data0 = dataSource as? [[String: [[String: [[String: [String]]]]]]]{
-            var arr0 = [String]()
-            var arr1 = [String]()
-            var arr2 = [String]()
-            var arr3 = [String]()
-            for (idx0, dic0) in data0.enumerated() {
-                let key0 = dic0.keys.first!
-                arr0.append(key0)
-                if idx0 == self.selectedIndexs[0] {
-                    let data1 = dic0[key0]!
-                    for (idx1, dic1) in data1.enumerated() {
-                        let key1 = dic1.keys.first!
-                        arr1.append(key1)
-                        if idx1 == self.selectedIndexs[1] {
-                            let data2 = dic1[key1]!
-                            for (idx2, dic2) in data2.enumerated() {
-                                let key2 = dic2.keys.first!
-                                arr2.append(key2)
-                                if idx2 == self.selectedIndexs[2] {
-                                    let value = dic2[key2]!
-                                    arr3 = value
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            self.linkgeDataSource = [arr0, arr1, arr2, arr3]
-        }
+        self.linkgeDataSource.append(nameArr)
     }
+
 }
 
 // MARK: - UIPickerViewDataSource
@@ -458,7 +358,10 @@ extension SFStringPickerView: UIPickerViewDelegate {
         if (selectedIndexs.count-1) >= (component+1) {
             let range = component+1...selectedIndexs.count-1
             selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
-            getLinkgeData()
+            if isLinkge, let data = self.dataSource as? SFStringLinkgeData {
+                getLinkgeDataWith(data, component: 0)
+                self.linkgeDataSource.reverse()
+            }
             for c in range {
                 let row = selectedIndexs[c]
                 pickerView.reloadComponent(c)

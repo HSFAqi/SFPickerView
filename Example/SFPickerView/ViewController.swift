@@ -57,28 +57,12 @@ class ViewController: UIViewController {
             }
         }
         else if sender.tag == 5 {
-            let data = [["0": ["A", "B", "C"]],
-                        ["1": ["@", "#", "$"]],
-                        ["2": ["I", "II", "III"]],
-                        ["3": ["a", "b", "c"]],
-                        ["4": ["个", "十", "百"]],
-                        ["5": ["时", "分", "秒"]]]
-            SFStringPickerView.showPickerWithTitle("【联动】二维", mode: .two(data: data), defaultIndexs: [2, 0], config: nil) { (indexs, values) in
-                print("indexs:\(indexs)")
-                print("values:\(values)")
-            }
+            
         }
         else if sender.tag == 6 {
-            let arr0 = ["🐱", "🐩", "🐷"]
-            let arr1 = ["🐭", "🐒", "🐔"]
-            let arr2 = ["🐂", "🐅", "🐰"]
-            let data = [["0": [["A": arr0], ["B": arr1], ["C": arr2]]],
-                        ["1": [["@": arr0], ["#": arr1], ["$": arr2]]],
-                        ["2": [["I": arr0], ["II": arr1], ["III": arr2]]],
-                        ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
-                        ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
-                        ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
-            SFStringPickerView.showPickerWithTitle("【联动】三维", mode: .three(data: data), defaultIndexs: [2, 0, 2], config: nil) { (indexs, values) in
+            let picker = SFAddressPickerView(frame: CGRect.zero)
+            let data = picker.provinceDataSource
+            SFStringPickerView.showPickerWithTitle("地址", mode: .any(data: data), defaultIndexs: nil, config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }

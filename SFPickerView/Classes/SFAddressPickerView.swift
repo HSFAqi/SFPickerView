@@ -17,22 +17,39 @@ import UIKit
 public class SFAddressPickerView: SFPickerView {
         
     // MARK: - Model
-    public struct ProvinceModel {
-        var code: String?
+    public struct SFProvinceModel: SFPickerModelProtocol {
+        public var code: String?
         public var name: String?
-        var index: Int?
-        var citylist: [CityModel]?
+        public var index: Int?
+        public var citylist: [SFCityModel]?
+        public var nextList: [Any]? {
+            get{
+                return citylist
+            }
+            set{
+                citylist = newValue as? [SFCityModel]
+            }
+        }
     }
-    public struct CityModel {
-        var code: String?
+    public struct SFCityModel: SFPickerModelProtocol {
+        public var code: String?
         public var name: String?
-        var index: Int?
-        var arealist: [AreaModel]?
+        public var index: Int?
+        public var arealist: [SFAreaModel]?
+        public var nextList: [Any]? {
+            get{
+                return arealist
+            }
+            set{
+                arealist = newValue as? [SFAreaModel]
+            }
+        }
     }
-    public struct AreaModel {
-        var code: String?
+    public struct SFAreaModel: SFPickerModelProtocol {
+        public var code: String?
         public var name: String?
-        var index: Int?
+        public var index: Int?
+        public var nextList: [Any]?
     }
 
     // MARK: - Property(private)
@@ -43,12 +60,12 @@ public class SFAddressPickerView: SFPickerView {
         return view
     }()
     private(set) var addressDataSource: Any?
-    private(set) var provinceDataSource = [ProvinceModel]()
-    private(set) var cityDataSource = [CityModel]()
-    private(set) var areaDataSource = [AreaModel]()
-    private(set) var selectedProvinceModel: ProvinceModel?
-    private(set) var selectedCityModel: CityModel?
-    private(set) var selectedAreaModel: AreaModel?
+    public var provinceDataSource = [SFProvinceModel]()
+    private(set) var cityDataSource = [SFCityModel]()
+    private(set) var areaDataSource = [SFAreaModel]()
+    private(set) var selectedProvinceModel: SFProvinceModel?
+    private(set) var selectedCityModel: SFCityModel?
+    private(set) var selectedAreaModel: SFAreaModel?
     private(set) var defaultIndexs: [Int]?
     
     // MARK: - ConfigUI
@@ -85,7 +102,6 @@ public class SFAddressPickerView: SFPickerView {
         } catch let error {
             assertionFailure(error.localizedDescription)
         }
-        
     }
     
     /// 转模型
@@ -93,12 +109,12 @@ public class SFAddressPickerView: SFPickerView {
         guard let provinceList = addressDataSource as? [[String: Any]] else {
             return
         }
-        var provinceModelArr = [ProvinceModel]()
+        var provinceModelArr = [SFProvinceModel]()
         var provinceIndex = 0
         var cityIndex = 0
         var areaIndex = 0
         for provinceDic in provinceList {
-            var provinceModel = ProvinceModel()
+            var provinceModel = SFProvinceModel()
             provinceModel.code = provinceDic["code"] as? String
             provinceModel.name = provinceDic["name"] as? String
             provinceModel.index = provinceIndex
@@ -106,9 +122,9 @@ public class SFAddressPickerView: SFPickerView {
                 provinceModel.citylist = []
                 continue
             }
-            var cityModelArr = [CityModel]()
+            var cityModelArr = [SFCityModel]()
             for cityDic in cityList {
-                var cityModel = CityModel()
+                var cityModel = SFCityModel()
                 cityModel.code = cityDic["code"] as? String
                 cityModel.name = cityDic["name"] as? String
                 cityModel.index = cityIndex
@@ -116,9 +132,9 @@ public class SFAddressPickerView: SFPickerView {
                     cityModel.arealist = []
                     continue
                 }
-                var areaModelArr = [AreaModel]()
+                var areaModelArr = [SFAreaModel]()
                 for areaDic in areaList {
-                    var areaModel = AreaModel()
+                    var areaModel = SFAreaModel()
                     areaModel.code = areaDic["code"] as? String
                     areaModel.name = areaDic["name"] as? String
                     areaModel.index = areaIndex
@@ -142,7 +158,7 @@ public class SFAddressPickerView: SFPickerView {
     /// - Parameters:
     ///   - title: 标题
     ///   - dataSource: 数据源
-    public func showPickerWithTitle(_ title: String?, defaultIndexs: [Int]?,  completed: @escaping (ProvinceModel?, CityModel?, AreaModel?) -> Void) {
+    public func showPickerWithTitle(_ title: String?, defaultIndexs: [Int]?,  completed: @escaping (SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void) {
         self.title = title
         self.defaultIndexs = defaultIndexs
         configSeletedIndexAndValues()
@@ -162,7 +178,7 @@ public class SFAddressPickerView: SFPickerView {
     ///   - title: 标题
     ///   - dataSource: 数据源
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, defaultIndexs: [Int]?, completed: @escaping (ProvinceModel?, CityModel?, AreaModel?) -> Void) -> SFAddressPickerView {
+    public class func showPickerWithTitle(_ title: String?, defaultIndexs: [Int]?, completed: @escaping (SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void) -> SFAddressPickerView {
         let pickerView = SFAddressPickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, defaultIndexs: defaultIndexs, completed: completed)
         return pickerView
