@@ -8,15 +8,18 @@
 
 import UIKit
 
-// MARK: - SFPickerDataMode
+// MARK: - SFPickerData
+public protocol SFPickerDataProtocol {}
+extension UIImage: SFPickerDataProtocol { }
+extension String: SFPickerDataProtocol { }
 public protocol SFPickerModelProtocol {
     var code: String? {get set}
     var name: String? {get set}
     var nextList: [Any]? {get set}
 }
 
-public typealias SFPickerSingleData = [String]
-public typealias SFPickerMulData = [[String]]
+public typealias SFPickerSingleData = [SFPickerDataProtocol]
+public typealias SFPickerMulData = [[SFPickerDataProtocol]]
 public typealias SFPickerLinkgeData = [SFPickerModelProtocol]
 
 public enum SFPickerDataMode {
