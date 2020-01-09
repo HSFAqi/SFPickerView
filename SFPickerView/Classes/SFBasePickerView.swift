@@ -369,6 +369,7 @@ extension SFBasePickerView: UIPickerViewDelegate {
                 registerView = label
                 break
             case .imageView(appearance: let appearance):
+                var imageView = UIImageView()
                 var customAppearance: SFPickerImageViewAppearance
                 if let custom = appearance {
                     customAppearance = custom
@@ -376,12 +377,11 @@ extension SFBasePickerView: UIPickerViewDelegate {
                     customAppearance = SFPickerImageViewAppearance()
                 }
                 if let customImageView = customAppearance.customImageView {
-                    registerView = customImageView
+                    imageView = customImageView
                 }else{
-                    let imageView = UIImageView()
                     imageView.contentMode = customAppearance.contentMode
-                    registerView = imageView
                 }
+                registerView = imageView
                 break
             }
             return registerView
@@ -432,7 +432,6 @@ extension SFBasePickerView: UIPickerViewDelegate {
                 let replaceSubrange = 0...self.linkgeDataSource.count-1
                 self.linkgeDataSource.replaceSubrange(replaceSubrange, with: Array.init(repeating: [], count: replaceSubrange.count))
                 getLinkgeDataWith(data)
-                
                 self.linkgeDataSource.reverse()
             }
             for c in range {
