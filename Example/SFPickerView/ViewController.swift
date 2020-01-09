@@ -22,7 +22,7 @@ class ViewController: UIViewController {
         let dataSource1 = [dataSource0, dataSource0]
         
         if sender.tag == 0 {
-            let picker = SFBasePickerView(frame: CGRect.zero)
+            let picker = SFStringPickerView(frame: CGRect.zero)
             picker.config.alertViewHeight = 500
             picker.config.isCallbackWhenSelecting = true
             picker.config.maskBackgroundColor = UIColor.red
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
             }
         }
         else if sender.tag == 1 {
-            SFBasePickerView.showPickerWithTitle("【单列】类方法", style: nil, dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
+            SFStringPickerView.showPickerWithTitle("【单列】类方法", style: nil, dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
