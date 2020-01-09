@@ -21,9 +21,6 @@ public struct SFConfig {
     public var rowHeight: CGFloat = 50
     public var isCallbackWhenSelecting: Bool = false
     
-    
-    
-    
     public init() { }
 }
 

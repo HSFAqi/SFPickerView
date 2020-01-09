@@ -80,6 +80,7 @@ public class SFBasePickerView: SFBaseView {
         return view
     }()
     
+    private(set) var style: SFPickerStyle = .label(appearance: nil)
     private(set) var dataSource = [Any]() // 数据源
     private(set) var linkgeDataSource = [Any]() // 联动模式时使用的数据源
     private(set) var selectedIndexs = [Int]() // 选中Index
@@ -90,7 +91,6 @@ public class SFBasePickerView: SFBaseView {
     private var isLinkge: Bool = false // 是否联动
     private var isChanged: Bool = false // 是否更改
     
-    var style: SFPickerStyle = .label(appearance: nil)
     
     // MARK: - ConfigUI
     override func configUI() {
@@ -119,9 +119,9 @@ public class SFBasePickerView: SFBaseView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) -> SFBasePickerView{
+    public class func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) -> SFBasePickerView{
         let pickerView = SFBasePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, dataSource: dataSource, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, style: style, dataSource: dataSource, config: config, callback: callback)
         return pickerView
     }
     /// 单列，对象方法（单列时推荐使用）
@@ -131,13 +131,16 @@ public class SFBasePickerView: SFBaseView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
             return
         }
         isMul = false
         self.title = title
+        if let s = style {
+            self.style = s
+        }
         self.dataSource = dataSource
         self.selectedIndexs = [defaultIndex]
         configSeletedIndexAndValues()
@@ -170,9 +173,9 @@ public class SFBasePickerView: SFBaseView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFBasePickerView{
+    public class func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFBasePickerView{
         let pickerView = SFBasePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, style: style, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// 单列+多列+联动，对象方法
@@ -182,7 +185,11 @@ public class SFBasePickerView: SFBaseView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) {
+        self.title = title
+        if let s = style {
+            self.style = s
+        }
         let usefulMode = mode.getUsefulMode()
         switch usefulMode {
         case .single(data: let data):
@@ -237,7 +244,6 @@ public class SFBasePickerView: SFBaseView {
             assertionFailure("dataSource不能为空")
             return
         }
-        self.title = title
         configSeletedIndexAndValues()
         if let c = config {
             self.config = c
@@ -292,7 +298,7 @@ public class SFBasePickerView: SFBaseView {
     }
     
     /// 【联动】数据结构转换
-    func getLinkgeDataWith(_ data: SFPickerLinkgeData, component: Int = 0) {
+    private func getLinkgeDataWith(_ data: SFPickerLinkgeData, component: Int = 0) {
         var nameArr = [String]()
         var index = 0
         if self.selectedIndexs.count > component, self.selectedIndexs.count > 0 {
@@ -424,7 +430,7 @@ extension SFBasePickerView: UIPickerViewDelegate {
         }
     }
     /// 【联动】刷新数据
-    func updateLinkgeDataWhenSelect(component: Int) {
+    private func updateLinkgeDataWhenSelect(component: Int) {
         if (selectedIndexs.count-1) >= (component+1) {
             let range = component+1...selectedIndexs.count-1
             selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
@@ -443,7 +449,7 @@ extension SFBasePickerView: UIPickerViewDelegate {
         }
     }
     /// 确保选中的values
-    func makeSureSelectedValuesInComponent(_ component: Int) {
+    private func makeSureSelectedValuesInComponent(_ component: Int) {
         let data = isLinkge ? linkgeDataSource : dataSource
         var values = [String]()
         if isMul {
