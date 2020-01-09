@@ -22,7 +22,7 @@ class ViewController: UIViewController {
         let dataSource1 = [dataSource0, dataSource0]
         
         if sender.tag == 0 {
-            let picker = SFStringPickerView(frame: CGRect.zero)
+            let picker = SFBasePickerView(frame: CGRect.zero)
             picker.config.alertViewHeight = 500
             picker.config.isCallbackWhenSelecting = true
             picker.config.maskBackgroundColor = UIColor.red
