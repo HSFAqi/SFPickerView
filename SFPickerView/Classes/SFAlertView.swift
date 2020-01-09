@@ -1,14 +1,14 @@
 //
-//  SFPickerAlertView.swift
-//  LuckyMascot
+//  SFAlertView.swift
+//  SFPickerView_Example
 //
-//  Created by 黄山锋 on 2019/12/30.
-//  Copyright © 2019 黄山锋. All rights reserved.
+//  Created by 黄山锋 on 2020/1/9.
+//  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
 import UIKit
 
-public struct SFPickerAlertViewAppearance {
+public struct SFAlertViewAppearance {
     public var topViewBackgroundColor: UIColor = UIColor.white
     public var lineViewBackgroundColor: UIColor = UIColor(red: 230.00/255.00, green: 230.00/255.00, blue: 230.00/255.00, alpha: 1)
     public var contentViewBackgroundColor: UIColor = UIColor.white
@@ -28,7 +28,7 @@ public struct SFPickerAlertViewAppearance {
     public init() { }
 }
 
-public class SFPickerAlertView: UIView {    
+public class SFAlertView: UIView {
     
     // MARK: - Property(internal)
     var contentView: UIView! = UIView(){
@@ -45,7 +45,7 @@ public class SFPickerAlertView: UIView {
     }
     var sureBlock: (() -> Void)?
     var cancelBlock: (() -> Void)?
-    var appearance: SFPickerAlertViewAppearance = SFPickerAlertViewAppearance() {
+    var appearance: SFAlertViewAppearance = SFAlertViewAppearance() {
         didSet{
             customAppearanceSubviews()
         }

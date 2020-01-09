@@ -1,30 +1,28 @@
 //
-//  SFStringPickerView.swift
-//  LuckyMascot
+//  SFBasePickerView.swift
+//  SFPickerView_Example
 //
-//  Created by 黄山锋 on 2019/12/30.
-//  Copyright © 2019 黄山锋. All rights reserved.
+//  Created by 黄山锋 on 2020/1/9.
+//  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
 import UIKit
 
-// TODO:
-// 【联动】传入数据模型
-
-public typealias SFStringSingleData = [String]
-public typealias SFStringMulData = [[String]]
-public typealias SFStringLinkgeData = [SFPickerModelProtocol]
-
+// MARK: - SFPickerDataMode
 public protocol SFPickerModelProtocol {
     var code: String? {get set}
     var name: String? {get set}
     var nextList: [Any]? {get set}
 }
 
-public enum SFStringMode {
-    case single(data: SFStringSingleData)
-    case mul(data: SFStringMulData)
-    case linkge(data: SFStringLinkgeData)
+public typealias SFPickerSingleData = [String]
+public typealias SFPickerMulData = [[String]]
+public typealias SFPickerLinkgeData = [SFPickerModelProtocol]
+
+public enum SFPickerDataMode {
+    case single(data: SFPickerSingleData)
+    case mul(data: SFPickerMulData)
+    case linkge(data: SFPickerLinkgeData)
     
     // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
     case any(data: [Any])
@@ -32,13 +30,13 @@ public enum SFStringMode {
         var usefulMode = self
         switch self {
         case .any(data: let data):
-            if let d = data as? SFStringSingleData {
+            if let d = data as? SFPickerSingleData {
                 usefulMode = .single(data: d)
             }
-            else if let d = data as? SFStringMulData {
+            else if let d = data as? SFPickerMulData {
                 usefulMode = .mul(data: d)
             }
-            else if let d = data as? SFStringLinkgeData {
+            else if let d = data as? SFPickerLinkgeData {
                 usefulMode = .linkge(data: d)
             }
             else {
@@ -51,8 +49,28 @@ public enum SFStringMode {
         return usefulMode
     }
 }
+// MARK: - SFPickerStyle
+public enum SFPickerStyle {
+    case label(appearance: SFPickerLabelAppearance?)
+    case imageView(appearance: SFPickerImageViewAppearance?)
+}
+public struct SFPickerLabelAppearance {
+    public var font: UIFont = UIFont.systemFont(ofSize: 20)
+    public var textColor: UIColor = UIColor.black
+    public var textAlignment: NSTextAlignment = .center
+    public var adjustsFontSizeToFitWidth: Bool = true
+    public var minimumScaleFactor: CGFloat = 0.5
+    // 传入自定义label
+    public var customLabel: UILabel?
+}
+public struct SFPickerImageViewAppearance {
+    public var contentMode: UIView.ContentMode = .scaleAspectFit
+    // 传入自定义imageView
+    public var customImageView: UIImageView?
+}
 
-public class SFStringPickerView: SFPickerView {
+
+public class SFBasePickerView: SFBaseView {
     
     // MARK: - Property(private)
     private lazy var pickerView: UIPickerView = {
@@ -72,12 +90,14 @@ public class SFStringPickerView: SFPickerView {
     private var isLinkge: Bool = false // 是否联动
     private var isChanged: Bool = false // 是否更改
     
+    var style: SFPickerStyle = .label(appearance: nil)
+    
     // MARK: - ConfigUI
     override func configUI() {
         super.configUI()
         alertView.contentView = pickerView
     }
-    public override var config: SFPickerConfig {
+    public override var config: SFConfig {
         willSet{
             /** 说明：
              * UIPickerView的代理方法rowHeightForComponent，只有在UIPickerView在绘制时才会调用
@@ -99,8 +119,8 @@ public class SFStringPickerView: SFPickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, dataSource: SFStringSingleData, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) -> SFStringPickerView{
-        let pickerView = SFStringPickerView(frame: CGRect.zero)
+    public class func showPickerWithTitle(_ title: String?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) -> SFBasePickerView{
+        let pickerView = SFBasePickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, dataSource: dataSource, config: config, callback: callback)
         return pickerView
     }
@@ -111,7 +131,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, dataSource: SFStringSingleData, defaultIndex: Int = 0, config: SFPickerConfig?, callback: @escaping ((Int, String) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
             return
@@ -150,8 +170,8 @@ public class SFStringPickerView: SFPickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public class func showPickerWithTitle(_ title: String?, mode: SFStringMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFStringPickerView{
-        let pickerView = SFStringPickerView(frame: CGRect.zero)
+    public class func showPickerWithTitle(_ title: String?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFBasePickerView{
+        let pickerView = SFBasePickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
@@ -162,7 +182,7 @@ public class SFStringPickerView: SFPickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public func showPickerWithTitle(_ title: String?, mode: SFStringMode, defaultIndexs: [Int]?, config: SFPickerConfig?, callback: @escaping (([Int], [String]) -> Void)) {
+    public func showPickerWithTitle(_ title: String?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) {
         let usefulMode = mode.getUsefulMode()
         switch usefulMode {
         case .single(data: let data):
@@ -201,8 +221,12 @@ public class SFStringPickerView: SFPickerView {
             self.dataSource = data
             isLinkge = true
             isMul = true
-            if let data = self.dataSource as? SFStringLinkgeData {
-                getLinkgeDataWith(data, component: 0)
+            if let data = self.dataSource as? SFPickerLinkgeData {
+                if self.linkgeDataSource.count > 0 {
+                    let replaceSubrange = 0...self.linkgeDataSource.count-1
+                    self.linkgeDataSource.replaceSubrange(replaceSubrange, with: Array.init(repeating: [], count: replaceSubrange.count))
+                }
+                getLinkgeDataWith(data)
                 self.linkgeDataSource.reverse()
             }
             break
@@ -268,7 +292,7 @@ public class SFStringPickerView: SFPickerView {
     }
     
     /// 【联动】数据结构转换
-    public func getLinkgeDataWith(_ data: SFStringLinkgeData, component: Int) {
+    func getLinkgeDataWith(_ data: SFPickerLinkgeData, component: Int = 0) {
         var nameArr = [String]()
         var index = 0
         if self.selectedIndexs.count > component, self.selectedIndexs.count > 0 {
@@ -280,7 +304,7 @@ public class SFStringPickerView: SFPickerView {
         for (idx, model) in data.enumerated() {
             nameArr.append(model.name ?? "")
             if idx == index {
-                if let nextList = model.nextList as? SFStringLinkgeData {
+                if let nextList = model.nextList as? SFPickerLinkgeData {
                     self.getLinkgeDataWith(nextList, component: component+1)
                 }
             }
@@ -291,7 +315,7 @@ public class SFStringPickerView: SFPickerView {
 }
 
 // MARK: - UIPickerViewDataSource
-extension SFStringPickerView: UIPickerViewDataSource {
+extension SFBasePickerView: UIPickerViewDataSource {
     
     public func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return selectedIndexs.count
@@ -314,28 +338,56 @@ extension SFStringPickerView: UIPickerViewDataSource {
 }
 
 // MARK: - UIPickerViewDelegate
-extension SFStringPickerView: UIPickerViewDelegate {
+extension SFBasePickerView: UIPickerViewDelegate {
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return config.rowHeight
     }
     
-    public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        let data = isLinkge ? linkgeDataSource : dataSource
-        if isMul {
-            if let components = (data as? [[String]]) {
-                let rows = components[component]
-                return rows[row]
-            }else{
-                return ""
+    public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        guard let customView = view else {
+            var registerView = UIView()
+            switch style {
+            case .label(appearance: let appearance):
+                var label = UILabel()
+                var customAppearance: SFPickerLabelAppearance
+                if let custom = appearance {
+                    customAppearance = custom
+                }else{
+                    customAppearance = SFPickerLabelAppearance()
+                }
+                if let customLabel = customAppearance.customLabel {
+                    label = customLabel
+                }else{
+                    label.font = customAppearance.font
+                    label.textColor = customAppearance.textColor
+                    label.textAlignment = customAppearance.textAlignment
+                    label.adjustsFontSizeToFitWidth = customAppearance.adjustsFontSizeToFitWidth
+                    label.minimumScaleFactor = customAppearance.minimumScaleFactor
+                }
+                label.text = getPickerViewDataAtRow(row, component: component)
+                registerView = label
+                break
+            case .imageView(appearance: let appearance):
+                var customAppearance: SFPickerImageViewAppearance
+                if let custom = appearance {
+                    customAppearance = custom
+                }else{
+                    customAppearance = SFPickerImageViewAppearance()
+                }
+                if let customImageView = customAppearance.customImageView {
+                    registerView = customImageView
+                }else{
+                    let imageView = UIImageView()
+                    imageView.contentMode = customAppearance.contentMode
+                    registerView = imageView
+                }
+                break
             }
-        }else{
-            if let rows = (data as? [String]) {
-                return rows[row]
-            }else{
-                return ""
-            }
+            return registerView
         }
+        
+        return customView
     }
     
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -353,13 +405,34 @@ extension SFStringPickerView: UIPickerViewDelegate {
         }
     }
     
+    /// 获取指定row的数据
+    func getPickerViewDataAtRow(_ row: Int, component: Int) -> String? {
+        let data = isLinkge ? linkgeDataSource : dataSource
+        if isMul {
+            if let components = (data as? [[String]]) {
+                let rows = components[component]
+                return rows[row]
+            }else{
+                return ""
+            }
+        }else{
+            if let rows = (data as? [String]) {
+                return rows[row]
+            }else{
+                return ""
+            }
+        }
+    }
     /// 【联动】刷新数据
     func updateLinkgeDataWhenSelect(component: Int) {
         if (selectedIndexs.count-1) >= (component+1) {
             let range = component+1...selectedIndexs.count-1
             selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
-            if isLinkge, let data = self.dataSource as? SFStringLinkgeData {
-                getLinkgeDataWith(data, component: 0)
+            if isLinkge, let data = self.dataSource as? SFPickerLinkgeData {
+                let replaceSubrange = 0...self.linkgeDataSource.count-1
+                self.linkgeDataSource.replaceSubrange(replaceSubrange, with: Array.init(repeating: [], count: replaceSubrange.count))
+                getLinkgeDataWith(data)
+                
                 self.linkgeDataSource.reverse()
             }
             for c in range {

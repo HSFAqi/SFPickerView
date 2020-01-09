@@ -22,36 +22,37 @@ class ViewController: UIViewController {
         let dataSource1 = [dataSource0, dataSource0]
         
         if sender.tag == 0 {
-            let picker = SFStringPickerView(frame: CGRect.zero)
+            let picker = SFBasePickerView(frame: CGRect.zero)
             picker.config.alertViewHeight = 500
             picker.config.isCallbackWhenSelecting = true
             picker.config.maskBackgroundColor = UIColor.red
+            picker.config.appearance.contentViewBackgroundColor = UIColor.cyan
             picker.showPickerWithTitle("【单列】对象方法", dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
         }
         else if sender.tag == 1 {
-            SFStringPickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
+            SFBasePickerView.showPickerWithTitle("【单列】类方法", dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
         }
         else if sender.tag == 2 {
-            let picker = SFStringPickerView(frame: CGRect.zero)
+            let picker = SFBasePickerView(frame: CGRect.zero)
             picker.showPickerWithTitle("【多列】对象方法", mode: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 3 {
-            SFStringPickerView.showPickerWithTitle("【多列】类方法", mode: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
+            SFBasePickerView.showPickerWithTitle("【多列】类方法", mode: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 4 {
-            SFStringPickerView.showPickerWithTitle("【单列】==【一维】", mode: .single(data: dataSource0), defaultIndexs: [0], config: nil) { (index, value) in
+            SFBasePickerView.showPickerWithTitle("【单列】==【一维】", mode: .single(data: dataSource0), defaultIndexs: [0], config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }
@@ -62,10 +63,11 @@ class ViewController: UIViewController {
         else if sender.tag == 6 {
             let picker = SFAddressPickerView(frame: CGRect.zero)
             let data = picker.provinceDataSource
-            SFStringPickerView.showPickerWithTitle("地址", mode: .any(data: data), defaultIndexs: nil, config: nil) { (indexs, values) in
+            SFBasePickerView.showPickerWithTitle("地址", mode: .any(data: data), defaultIndexs: nil, config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
+            picker.removeFromSuperview()
         }
         else if sender.tag == 7 {
             let arr0 = [["🐱": ["q", "w", "e"]], ["🐩": ["r", "t", "y"]], ["🐷": ["u", "i", "o"]]]
@@ -77,7 +79,7 @@ class ViewController: UIViewController {
                         ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
                         ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
                         ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
-            SFStringPickerView.showPickerWithTitle("【联动】四维", mode: .any(data: data), defaultIndexs: [2, 0, 2, 0], config: nil) { (indexs, values) in
+            SFBasePickerView.showPickerWithTitle("【联动】四维", mode: .any(data: data), defaultIndexs: [2, 0, 2, 0], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
@@ -108,17 +110,10 @@ class ViewController: UIViewController {
     // date
     @IBAction func dateAction(_ sender: UIButton) {
         if sender.tag == 0 {
-            let picker = SFDatePickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("时间", mode: .time, minDate: nil, maxDate: nil, isCallbackWhenSelecting: true) { (date, value) in
-                print("date:\(date)")
-                print("value:\(value)")
-            }
+            
         }
         else if sender.tag == 1 {
-            SFDatePickerView.showPickerWithTitle("时间", mode: .time, minDate: nil, maxDate: nil, isCallbackWhenSelecting: true) { (date, value) in
-                print("date:\(date)")
-                print("value:\(value)")
-            }
+            
         }
     }
     

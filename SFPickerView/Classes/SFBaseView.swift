@@ -1,35 +1,36 @@
 //
-//  SFPickerView.swift
-//  LuckyMascot
+//  SFBaseView.swift
+//  SFPickerView_Example
 //
-//  Created by 黄山锋 on 2019/12/30.
-//  Copyright © 2019 黄山锋. All rights reserved.
+//  Created by 黄山锋 on 2020/1/9.
+//  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
 import UIKit
 
-// TODO:
-
-public struct SFPickerConfig {
+public struct SFConfig {
     public var superView: UIView?
-    public var appearance: SFPickerAlertViewAppearance = SFPickerAlertViewAppearance()
+    public var appearance: SFAlertViewAppearance = SFAlertViewAppearance()
     public var maskBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.3)
     public var isMaskEnabled: Bool = true
     public var isAnimated: Bool = true
     public var during: TimeInterval = 0.3
     public var alertViewHeight: CGFloat = 300
     
-    // UIPickerView
+    /* SFBasePickerView */
     public var rowHeight: CGFloat = 50
     public var isCallbackWhenSelecting: Bool = false
+    
+    
+    
     
     public init() { }
 }
 
-public class SFPickerView: UIView {    
+public class SFBaseView: UIView {
 
     // MARK: - Property(public)
-    public var config: SFPickerConfig = SFPickerConfig() {
+    public var config: SFConfig = SFConfig() {
         willSet{
             if newValue.alertViewHeight != config.alertViewHeight {
                 alertView.frame = CGRect(x: 0, y: self.frame.size.height, width: self.frame.size.width, height: newValue.alertViewHeight)
@@ -43,15 +44,15 @@ public class SFPickerView: UIView {
     }
     
     // MARK: - Property(internal)
-    lazy var alertView: SFPickerAlertView = {
-        let view = SFPickerAlertView(frame: self.bounds)
+    lazy var alertView: SFAlertView = {
+        let view = SFAlertView(frame: self.bounds)
         return view
     }()
     var title: String? {
         willSet{
             alertView.title = newValue
         }
-    }    
+    }
 
     // MARK: - Property(private)
     private lazy var maskBackgroundView: UIView = {

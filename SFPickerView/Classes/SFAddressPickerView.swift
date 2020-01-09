@@ -14,7 +14,7 @@ import UIKit
 // 3，模型自定义
 
 
-public class SFAddressPickerView: SFPickerView {
+public class SFAddressPickerView: SFBaseView {
         
     // MARK: - Model
     public struct SFProvinceModel: SFPickerModelProtocol {
@@ -74,7 +74,7 @@ public class SFAddressPickerView: SFPickerView {
         alertView.contentView = pickerView
         loadAddressData()
     }
-    public override var config: SFPickerConfig{
+    public override var config: SFConfig{
         didSet{
             /** 说明：
              * UIPickerView的代理方法rowHeightForComponent，只有在UIPickerView在绘制时才会调用
@@ -88,7 +88,7 @@ public class SFAddressPickerView: SFPickerView {
     /// 从本地plist文件读取地址数据
     private func loadAddressData() {
         do {
-            guard let bundle = Bundle.getBundle(forClass: SFPickerView.self as AnyClass, resource: "SFPickerView") else {
+            guard let bundle = Bundle.getBundle(forClass: SFBaseView.self as AnyClass, resource: "SFPickerView") else {
                 assertionFailure("获取外层bundle失败")
                 return
             }
