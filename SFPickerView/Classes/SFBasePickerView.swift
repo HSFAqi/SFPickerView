@@ -13,8 +13,7 @@ public protocol SFPickerDataProtocol {}
 extension UIImage: SFPickerDataProtocol { }
 extension String: SFPickerDataProtocol { }
 public protocol SFPickerModelProtocol {
-    var code: String? {get set}
-    var name: String? {get set}
+    var value: SFPickerDataProtocol? {get set}
     var nextList: [Any]? {get set}
 }
 
@@ -284,7 +283,7 @@ public class SFBasePickerView: SFBaseView {
     
     /// 【联动】数据结构转换
     private func getLinkgeDataWith(_ data: SFPickerLinkgeData, component: Int = 0) {
-        var nameArr = [String]()
+        var valueArr = [SFPickerDataProtocol?]()
         var index = 0
         if self.selectedIndexs.count > component, self.selectedIndexs.count > 0 {
             index = self.selectedIndexs[component]
@@ -293,14 +292,14 @@ public class SFBasePickerView: SFBaseView {
             self.selectedIndexs.append(index)
         }
         for (idx, model) in data.enumerated() {
-            nameArr.append(model.name ?? "")
+            valueArr.append(model.value)
             if idx == index {
                 if let nextList = model.nextList as? SFPickerLinkgeData {
                     self.getLinkgeDataWith(nextList, component: component+1)
                 }
             }
         }
-        self.linkgeDataSource.append(nameArr)
+        self.linkgeDataSource.append(valueArr)
     }
 
 }

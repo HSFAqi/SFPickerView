@@ -22,6 +22,14 @@ public class SFAddressPickerView: SFBaseView {
         public var name: String?
         public var index: Int?
         public var citylist: [SFCityModel]?
+        public var value: SFPickerDataProtocol? {
+            get{
+                return name
+            }
+            set{
+                name = newValue as? String
+            }
+        }
         public var nextList: [Any]? {
             get{
                 return citylist
@@ -36,6 +44,14 @@ public class SFAddressPickerView: SFBaseView {
         public var name: String?
         public var index: Int?
         public var arealist: [SFAreaModel]?
+        public var value: SFPickerDataProtocol? {
+            get{
+                return name
+            }
+            set{
+                name = newValue as? String
+            }
+        }
         public var nextList: [Any]? {
             get{
                 return arealist
@@ -49,6 +65,14 @@ public class SFAddressPickerView: SFBaseView {
         public var code: String?
         public var name: String?
         public var index: Int?
+        public var value: SFPickerDataProtocol? {
+            get{
+                return name
+            }
+            set{
+                name = newValue as? String
+            }
+        }
         public var nextList: [Any]?
     }
 
