@@ -56,12 +56,15 @@ public class SFAddressPickerView: SFBasePickerView {
     /// 转模型
     private func addressDataToModel(with data: Any) {
         guard let provinceList = data as? [[String: Any]] else {
-            return
+            fatalError()
         }
+        // 获取数据源
         var provinceModelArr = [SFProvinceModel]()
         var provinceIndex = 0
         var cityIndex = 0
         var areaIndex = 0
+        
+        provinceLoop:
         for provinceDic in provinceList {
             let provinceModel = SFProvinceModel()
             provinceModel.code = provinceDic["code"] as? String
@@ -69,9 +72,10 @@ public class SFAddressPickerView: SFBasePickerView {
             provinceModel.index = provinceIndex
             guard let cityList = provinceDic["cityList"] as? [[String: Any]] else {
                 provinceModel.citylist = []
-                continue
+                continue provinceLoop
             }
             var cityModelArr = [SFCityModel]()
+            cityLoop:
             for cityDic in cityList {
                 let cityModel = SFCityModel()
                 cityModel.code = cityDic["code"] as? String
@@ -79,9 +83,10 @@ public class SFAddressPickerView: SFBasePickerView {
                 cityModel.index = cityIndex
                 guard let areaList = cityDic["areaList"] as? [[String: Any]] else {
                     cityModel.arealist = []
-                    continue
+                    continue cityLoop
                 }
                 var areaModelArr = [SFAreaModel]()
+                areaLoop:
                 for areaDic in areaList {
                     let areaModel = SFAreaModel()
                     areaModel.code = areaDic["code"] as? String
@@ -98,7 +103,7 @@ public class SFAddressPickerView: SFBasePickerView {
             provinceModelArr.append(provinceModel)
             provinceIndex += 1
         }
-        addressDataSource = provinceModelArr
+        self.addressDataSource = provinceModelArr
     }
     
     // MARK: - Func
@@ -111,9 +116,9 @@ public class SFAddressPickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, mode: SFAddressPickerMode, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping ((SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping ((SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void)) -> SFBasePickerView{
         let pickerView = SFAddressPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, mode: mode, appearance: appearance, defaultIndexs: defaultIndexs, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, appearance: appearance, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// 【Address】对象方法
@@ -123,22 +128,7 @@ public class SFAddressPickerView: SFBasePickerView {
     ///   - defaultIndexs: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, mode: SFAddressPickerMode, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void) {
-        switch mode {
-        case .pca:
-            
-            break
-        case .pc:
-            break
-        case .ca(p: let provinceModel):
-            break
-        case .p:
-            break
-        case .c(p: let provinceModel):
-            break
-        case .a(p: let provinceModel, c: let cityModel):
-            break
-        }
+    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void) {
         self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .linkge(data: self.addressDataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
             let provinceModel = values[0] as? SFProvinceModel
             let cityModel = values[1] as? SFCityModel
