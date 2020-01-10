@@ -14,6 +14,19 @@ import UIKit
 
 public class SFAddressPickerView: SFBasePickerView {
     
+    
+    /// 模式
+    /// "p" = "province", "c" == "city", "a" == "area"
+    public enum SFAddressPickerMode {
+        case pca                                   // 省市区
+        case pc                                    // 省市
+        case ca(p: SFProvinceModel)                // 市区
+        case p                                     // 省
+        case c(p: SFProvinceModel)                 // 市
+        case a(p: SFProvinceModel, c: SFCityModel) // 区
+    }
+    
+    // MARK: - Property(private)
     private var addressDataSource = [SFPickerModel?]()
     
     // MARK: - ConfigUI
@@ -98,9 +111,9 @@ public class SFAddressPickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping ((SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, mode: SFAddressPickerMode, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping ((SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void)) -> SFBasePickerView{
         let pickerView = SFAddressPickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, appearance: appearance, defaultIndexs: defaultIndexs, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, mode: mode, appearance: appearance, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// 【Address】对象方法
@@ -110,8 +123,23 @@ public class SFAddressPickerView: SFBasePickerView {
     ///   - defaultIndexs: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void) {
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), mode: .linkge(data: self.addressDataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
+    public final func showPickerWithTitle(_ title: String?, mode: SFAddressPickerMode, appearance: SFPickerLabelAppearance?, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (SFProvinceModel?, SFCityModel?, SFAreaModel?) -> Void) {
+        switch mode {
+        case .pca:
+            
+            break
+        case .pc:
+            break
+        case .ca(p: let provinceModel):
+            break
+        case .p:
+            break
+        case .c(p: let provinceModel):
+            break
+        case .a(p: let provinceModel, c: let cityModel):
+            break
+        }
+        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .linkge(data: self.addressDataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
             let provinceModel = values[0] as? SFProvinceModel
             let cityModel = values[1] as? SFCityModel
             let areaModel = values[2] as? SFAreaModel

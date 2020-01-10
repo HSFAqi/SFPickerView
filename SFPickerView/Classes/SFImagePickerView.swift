@@ -47,9 +47,9 @@ class SFImagePickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage]) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage]) -> Void)) -> SFBasePickerView{
         let pickerView = SFImagePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, appearance: appearance, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, appearance: appearance, dataType: dataType, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// 【Image】单列+多列+联动，对象方法
@@ -60,7 +60,7 @@ class SFImagePickerView: SFBasePickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage]) -> Void)) {
-        self.showPickerWithTitle(title, style: .imageView(appearance: appearance), mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback as! (([Int], [SFPickerDataProtocol?]) -> Void))
+    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage]) -> Void)) {
+        self.showPickerWithTitle(title, style: .imageView(appearance: appearance), dataType: dataType, defaultIndexs: defaultIndexs, config: config, callback: callback as! (([Int], [SFPickerDataProtocol?]) -> Void))
     }
 }

@@ -41,19 +41,19 @@ class ViewController: UIViewController {
         }
         else if sender.tag == 2 {
             let picker = SFBasePickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("【多列】对象方法", style: nil, mode: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
+            picker.showPickerWithTitle("【多列】对象方法", style: nil, dataType: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 3 {
-            SFBasePickerView.showPickerWithTitle("【多列】类方法", style: nil, mode: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
+            SFBasePickerView.showPickerWithTitle("【多列】类方法", style: nil, dataType: .mul(data: dataSource1), defaultIndexs: [2, 3], config: nil) { (indexs, values) in
                 print("indexs:\(indexs)")
                 print("values:\(values)")
             }
         }
         else if sender.tag == 4 {
-            SFBasePickerView.showPickerWithTitle("【单列】==【一维】", style: nil, mode: .single(data: dataSource0), defaultIndexs: [0], config: nil) { (index, value) in
+            SFBasePickerView.showPickerWithTitle("【单列】==【一维】", style: nil, dataType: .single(data: dataSource0), defaultIndexs: [0], config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(value)")
             }

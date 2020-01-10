@@ -21,14 +21,14 @@ public typealias SFPickerSingleData = [SFPickerDataProtocol?]
 public typealias SFPickerMulData = [[SFPickerDataProtocol?]]
 public typealias SFPickerLinkgeData = [SFPickerModel?]
 
-public enum SFPickerDataMode {
+public enum SFPickerDataType {
     case single(data: SFPickerSingleData)
     case mul(data: SFPickerMulData)
     case linkge(data: SFPickerLinkgeData)
     
     // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
     case any(data: [Any?])
-    func getUsefulMode() -> Self {
+    func getUsefulDataType() -> Self {
         var usefulMode = self
         switch self {
         case .any(data: let data):
@@ -182,9 +182,9 @@ public class SFBasePickerView: SFBaseView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) -> SFBasePickerView{
         let pickerView = SFBasePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, style: style, mode: mode, defaultIndexs: defaultIndexs, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, style: style, dataType: dataType, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
     }
     /// 【Base】单列+多列+联动，对象方法
@@ -195,12 +195,12 @@ public class SFBasePickerView: SFBaseView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, mode: SFPickerDataMode, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) {
+    public final func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) {
         self.title = title
         if let s = style {
             self.style = s
         }
-        let usefulMode = mode.getUsefulMode()
+        let usefulMode = dataType.getUsefulDataType()
         switch usefulMode {
         case .single(data: let data):
             isLinkge = false
