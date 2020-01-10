@@ -27,7 +27,7 @@ class ViewController: UIViewController {
             picker.config.isCallbackWhenSelecting = true
             picker.config.maskBackgroundColor = UIColor.red
             picker.config.appearance.contentViewBackgroundColor = UIColor.cyan
-            picker.showPickerWithTitle("【单列】对象方法", style: nil, dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
+            picker.showPickerWithTitle("【单列】对象方法", style: nil, dataSource: [], defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
                 print("value:\(String(describing: value))")
             }
@@ -73,10 +73,19 @@ class ViewController: UIViewController {
     // MARK: - address
     @IBAction func addressAction(_ sender: UIButton) {
         if sender.tag == 0 {
-            
+            let picker = SFAddressPickerView(frame: CGRect.zero)
+            picker.showPickerWithTitle("【地址】类方法", appearance: nil, defaultIndexs: nil, config: nil) { (provinceModel, cityModel, areaModel) in
+                print("province:\(String(describing: provinceModel?.value))")
+                print("city:\(String(describing: cityModel?.value))")
+                print("area:\(String(describing: areaModel?.value))")
+            }
         }
         else if sender.tag == 1 {
-            
+            SFAddressPickerView.showPickerWithTitle("【地址】类方法", appearance: nil, defaultIndexs: nil, config: nil) { (provinceModel, cityModel, areaModel) in
+                print("province:\(String(describing: provinceModel?.value))")
+                print("city:\(String(describing: cityModel?.value))")
+                print("area:\(String(describing: areaModel?.value))")
+            }
         }
     }
     

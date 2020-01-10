@@ -238,7 +238,6 @@ public class SFBasePickerView: SFBaseView {
             isLinkge = true
             self.dataSource = data
             getLinkgeDataWith(data)
-            self.usefulDataSource.reverse()
             break
         case .any(data: _):
             break
@@ -427,9 +426,9 @@ extension SFBasePickerView: UIPickerViewDelegate {
         if (selectedIndexs.count-1) >= (component+1) {
             let range = component+1...selectedIndexs.count-1
             selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
+            usefulDataSource.replaceSubrange(range, with: Array.init(repeating: [], count: range.count))
             if isLinkge, let data = self.dataSource as? SFPickerLinkgeData {
                 getLinkgeDataWith(data)
-                self.usefulDataSource.reverse()
             }
             for c in range {
                 let row = selectedIndexs[c]
