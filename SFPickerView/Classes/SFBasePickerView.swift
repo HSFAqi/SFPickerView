@@ -12,14 +12,14 @@ import UIKit
 public protocol SFPickerDataProtocol {}
 extension UIImage: SFPickerDataProtocol { }
 extension String: SFPickerDataProtocol { }
-public protocol SFPickerModelProtocol {
-    var value: SFPickerDataProtocol? {get set}
-    var nextList: [Any]? {get set}
+public class SFPickerModel: SFPickerDataProtocol {
+    var value: SFPickerDataProtocol?
+    var nextList: [Any?]?
 }
 
-public typealias SFPickerSingleData = [SFPickerDataProtocol]
-public typealias SFPickerMulData = [[SFPickerDataProtocol]]
-public typealias SFPickerLinkgeData = [SFPickerModelProtocol]
+public typealias SFPickerSingleData = [SFPickerDataProtocol?]
+public typealias SFPickerMulData = [[SFPickerDataProtocol?]]
+public typealias SFPickerLinkgeData = [SFPickerModel?]
 
 public enum SFPickerDataMode {
     case single(data: SFPickerSingleData)
@@ -27,7 +27,7 @@ public enum SFPickerDataMode {
     case linkge(data: SFPickerLinkgeData)
     
     // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
-    case any(data: [Any])
+    case any(data: [Any?])
     func getUsefulMode() -> Self {
         var usefulMode = self
         switch self {
@@ -82,14 +82,13 @@ public class SFBasePickerView: SFBaseView {
         return view
     }()
     
-    private(set) var style: SFPickerStyle = .label(appearance: nil)
-    private(set) var dataSource = [Any]() // 数据源
-    private(set) var linkgeDataSource = [Any]() // 联动模式时使用的数据源
+    private(set) var style: SFPickerStyle = .label(appearance: nil) // 样式
+    private(set) var dataSource = [Any?]() // 外部传入的数据源
+    private(set) var usefulDataSource = [[SFPickerDataProtocol?]]() // 内部使用的数据源
     private(set) var selectedIndexs = [Int]() // 选中Index
     private(set) var selectedValues = [SFPickerDataProtocol?]() // 选中Value
     private var callbackBlock: ((Int, SFPickerDataProtocol?) -> Void)? // 单列回调
     private var mulCallbackBlock: (([Int], [SFPickerDataProtocol?]) -> Void)? // 多列回调
-    private var isMul: Bool = false // 是否多列
     private var isLinkge: Bool = false // 是否联动
     private var isChanged: Bool = false // 是否更改
     
@@ -122,9 +121,9 @@ public class SFBasePickerView: SFBaseView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, SFPickerDataProtocol?) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, SFPickerDataProtocol?) -> Void)) -> SFBasePickerView{
         let pickerView = SFBasePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, style: style, dataSource: dataSource, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, style: style, dataSource: dataSource, defaultIndex: defaultIndex, config: config, callback: callback)
         return pickerView
     }
     /// 【Base】单列，对象方法（单列时推荐使用）
@@ -135,18 +134,23 @@ public class SFBasePickerView: SFBaseView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataSource: SFPickerSingleData, defaultIndex: Int = 0, config: SFConfig?, callback: @escaping ((Int, SFPickerDataProtocol?) -> Void)) {
+    public final func showPickerWithTitle(_ title: String?, style: SFPickerStyle?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, SFPickerDataProtocol?) -> Void)) {
         guard dataSource.count > 0 else {
             assertionFailure("dataSource不能为空!")
             return
         }
-        isMul = false
+        isLinkge = false
         self.title = title
         if let s = style {
             self.style = s
         }
         self.dataSource = dataSource
-        self.selectedIndexs = [defaultIndex]
+        self.usefulDataSource = [dataSource]
+        if let d = defaultIndex {
+            self.selectedIndexs = [d]
+        }else{
+            self.selectedIndexs = [0]
+        }
         initialSeletedValues()
         if let c = config {
             self.config = c
@@ -199,9 +203,9 @@ public class SFBasePickerView: SFBaseView {
         let usefulMode = mode.getUsefulMode()
         switch usefulMode {
         case .single(data: let data):
-            self.dataSource = data
             isLinkge = false
-            isMul = false
+            self.dataSource = data
+            self.usefulDataSource = [data]
             if let indexs = defaultIndexs {
                 guard defaultIndexs?.count == 1 else {
                     assertionFailure("【单列】请确保defaultIndexs?.count == 1")
@@ -213,9 +217,9 @@ public class SFBasePickerView: SFBaseView {
             }
             break
         case .mul(data: let data):
-            self.dataSource = data
             isLinkge = false
-            isMul = true
+            self.dataSource = data
+            self.usefulDataSource = data
             if let indexs = defaultIndexs {
                 guard defaultIndexs?.count == dataSource.count else {
                     assertionFailure("【多列】请确保defaultIndexs?.count == dataSource.count")
@@ -231,23 +235,16 @@ public class SFBasePickerView: SFBaseView {
             }
             break
         case .linkge(data: let data):
-            self.dataSource = data
             isLinkge = true
-            isMul = true
-            if let data = self.dataSource as? SFPickerLinkgeData {
-                if self.linkgeDataSource.count > 0 {
-                    let replaceSubrange = 0...self.linkgeDataSource.count-1
-                    self.linkgeDataSource.replaceSubrange(replaceSubrange, with: Array.init(repeating: [], count: replaceSubrange.count))
-                }
-                getLinkgeDataWith(data)
-                self.linkgeDataSource.reverse()
-            }
+            self.dataSource = data
+            getLinkgeDataWith(data)
+            self.usefulDataSource.reverse()
             break
         case .any(data: _):
             break
         }
-        guard self.dataSource.count > 0 else {
-            assertionFailure("dataSource不能为空")
+        guard self.usefulDataSource.count > 0 else {
+            assertionFailure("数据源不能为空")
             return
         }
         initialSeletedValues()
@@ -274,32 +271,52 @@ public class SFBasePickerView: SFBaseView {
     /// 默认选中值
     private func initialSeletedValues() {
         pickerView.reloadAllComponents()
-        self.selectedValues = Array.init(repeating: "", count: self.selectedIndexs.count)
+        self.selectedValues = Array.init(repeating: nil, count: self.selectedIndexs.count)
         for (component, row) in self.selectedIndexs.enumerated() {
             updateSelectedValuesInComponent(component)
             pickerView.selectRow(row, inComponent: component, animated: true)
         }
     }
     
+    /// 确保选中的values
+    private func updateSelectedValuesInComponent(_ component: Int) {
+        guard usefulDataSource.count > 0,
+            usefulDataSource.count > component,
+            selectedIndexs.count == usefulDataSource.count else {
+            assertionFailure("数组越界")
+            return
+        }
+        let rows = usefulDataSource[component]
+        let index = selectedIndexs[component]
+        if rows.count > 0, rows.count > index {
+            selectedValues[component] = rows[index]
+        }else{
+            selectedValues[component] = nil
+        }
+    }
+    
     /// 【联动】数据结构转换
     private func getLinkgeDataWith(_ data: SFPickerLinkgeData, component: Int = 0) {
-        var valueArr = [SFPickerDataProtocol?]()
-        var index = 0
-        if self.selectedIndexs.count > component, self.selectedIndexs.count > 0 {
-            index = self.selectedIndexs[component]
+        // 获取row
+        var row = 0
+        if self.selectedIndexs.count > 0, self.selectedIndexs.count > component {
+            row = self.selectedIndexs[component]
         }else{
-            index = 0
-            self.selectedIndexs.append(index)
+            row = 0
+            self.selectedIndexs.append(row)
+            self.usefulDataSource.append([])
         }
+        // 获取value
+        var valueArr = [SFPickerDataProtocol?]()
         for (idx, model) in data.enumerated() {
-            valueArr.append(model.value)
-            if idx == index {
-                if let nextList = model.nextList as? SFPickerLinkgeData {
+            valueArr.append(model)
+            if idx == row {
+                if let nextList = model?.nextList as? SFPickerLinkgeData {
                     self.getLinkgeDataWith(nextList, component: component+1)
                 }
             }
         }
-        self.linkgeDataSource.append(valueArr)
+        self.usefulDataSource[component] = valueArr
     }
 
 }
@@ -312,18 +329,8 @@ extension SFBasePickerView: UIPickerViewDataSource {
     }
     
     public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        let data = isLinkge ? linkgeDataSource : dataSource
-        var values = [String]()
-        if isMul {
-            if let components = (data as? [[String]]) {
-                values = components[component]
-            }
-        }else{
-            if let rows = (dataSource as? [String]) {
-                values = rows
-            }
-        }
-        return values.count
+        let rows = usefulDataSource[component]
+        return rows.count
     }
 }
 
@@ -355,7 +362,6 @@ extension SFBasePickerView: UIPickerViewDelegate {
                     label.adjustsFontSizeToFitWidth = customAppearance.adjustsFontSizeToFitWidth
                     label.minimumScaleFactor = customAppearance.minimumScaleFactor
                 }
-                label.text = getPickerViewDataAtRow(row, component: component)
                 registerView = label
                 break
             case .imageView(appearance: let appearance):
@@ -374,9 +380,10 @@ extension SFBasePickerView: UIPickerViewDelegate {
                 registerView = imageView
                 break
             }
+            updateRowDataAt(row: row, component: component, reusing: registerView)
             return registerView
         }
-        
+        updateRowDataAt(row: row, component: component, reusing: customView)
         return customView
     }
     
@@ -395,34 +402,34 @@ extension SFBasePickerView: UIPickerViewDelegate {
         }
     }
     
-    /// 获取指定row的数据
-    func getPickerViewDataAtRow(_ row: Int, component: Int) -> String? {
-        let data = isLinkge ? linkgeDataSource : dataSource
-        if isMul {
-            if let components = (data as? [[String]]) {
-                let rows = components[component]
-                return rows[row]
-            }else{
-                return ""
+    /// 更新row数据
+    func updateRowDataAt(row: Int, component: Int, reusing view: UIView) {
+        let rows = usefulDataSource[component]
+        let rowData = rows[row]
+        var value: SFPickerDataProtocol?
+        if isLinkge {
+            if let model = rowData as? SFPickerModel {
+                value = model.value
             }
         }else{
-            if let rows = (data as? [String]) {
-                return rows[row]
-            }else{
-                return ""
-            }
+            value = rowData
+        }
+        if let label = view as? UILabel {
+            label.text = value as? String
+        }
+        else if let imageView = view as? UIImageView {
+            imageView.image = value as? UIImage
         }
     }
+    
     /// 【联动】刷新数据
     private func updateLinkgeDataWhenSelect(component: Int) {
         if (selectedIndexs.count-1) >= (component+1) {
             let range = component+1...selectedIndexs.count-1
             selectedIndexs.replaceSubrange(range, with: Array.init(repeating: 0, count: range.count))
             if isLinkge, let data = self.dataSource as? SFPickerLinkgeData {
-                let replaceSubrange = 0...self.linkgeDataSource.count-1
-                self.linkgeDataSource.replaceSubrange(replaceSubrange, with: Array.init(repeating: [], count: replaceSubrange.count))
                 getLinkgeDataWith(data)
-                self.linkgeDataSource.reverse()
+                self.usefulDataSource.reverse()
             }
             for c in range {
                 let row = selectedIndexs[c]
@@ -432,25 +439,5 @@ extension SFBasePickerView: UIPickerViewDelegate {
             }
         }
     }
-    /// 确保选中的values
-    private func updateSelectedValuesInComponent(_ component: Int) {
-        let data = isLinkge ? linkgeDataSource : dataSource
-        var values = [SFPickerDataProtocol]()
-        if isMul {
-            if let components = (data as? [[SFPickerDataProtocol]]) {
-                let rows = components[component]
-                values = rows
-            }
-        }else{
-            if let rows = (data as? [SFPickerDataProtocol]) {
-                values = rows
-            }
-        }
-        let index = selectedIndexs[component]
-        if values.count > 0, values.count >= index {
-            selectedValues[component] = values[index]
-        }else{
-            selectedValues[component] = nil
-        }
-    }
+    
 }

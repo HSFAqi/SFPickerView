@@ -29,13 +29,13 @@ class ViewController: UIViewController {
             picker.config.appearance.contentViewBackgroundColor = UIColor.cyan
             picker.showPickerWithTitle("【单列】对象方法", style: nil, dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
-                print("value:\(value)")
+                print("value:\(String(describing: value))")
             }
         }
         else if sender.tag == 1 {
             SFStringPickerView.showPickerWithTitle("【单列】类方法", style: nil, dataSource: dataSource0, defaultIndex: 0, config: nil) { (index, value) in
                 print("index:\(index)")
-                print("value:\(value)")
+                print("value:\(String(describing: value))")
             }
             
         }
@@ -62,28 +62,10 @@ class ViewController: UIViewController {
             
         }
         else if sender.tag == 6 {
-            let picker = SFAddressPickerView(frame: CGRect.zero)
-            let data = picker.provinceDataSource
-            SFBasePickerView.showPickerWithTitle("地址", style: nil, mode: .any(data: data), defaultIndexs: nil, config: nil) { (indexs, values) in
-                print("indexs:\(indexs)")
-                print("values:\(values)")
-            }
-            picker.removeFromSuperview()
+           
         }
         else if sender.tag == 7 {
-            let arr0 = [["🐱": ["q", "w", "e"]], ["🐩": ["r", "t", "y"]], ["🐷": ["u", "i", "o"]]]
-            let arr1 = [["🐭": ["p", "a", "s"]], ["🐒": ["d", "f", "g"]], ["🐔": ["h", "j", "k"]]]
-            let arr2 = [["🐂": ["l", "z", "x"]], ["🐅": ["c", "v", "b"]], ["🐰": ["n", "m"]]]
-            let data = [["0": [["A": arr0], ["B": arr1], ["C": arr2]]],
-                        ["1": [["@": arr0], ["#": arr1], ["$": arr2]]],
-                        ["2": [["I": arr0], ["II": arr1], ["III": arr2]]],
-                        ["3": [["a": arr0], ["b": arr1], ["c": arr2]]],
-                        ["4": [["个": arr0], ["十": arr1], ["百": arr2]]],
-                        ["5": [["时": arr0], ["分": arr1], ["秒": arr2]]]]
-            SFBasePickerView.showPickerWithTitle("【联动】四维", style: nil, mode: .any(data: data), defaultIndexs: [2, 0, 2, 0], config: nil) { (indexs, values) in
-                print("indexs:\(indexs)")
-                print("values:\(values)")
-            }
+            
         }
     }
     
@@ -91,19 +73,10 @@ class ViewController: UIViewController {
     // MARK: - address
     @IBAction func addressAction(_ sender: UIButton) {
         if sender.tag == 0 {
-            let picker = SFAddressPickerView(frame: CGRect.zero)
-            picker.showPickerWithTitle("地址对象方法", defaultIndexs: nil) { (provinceModel, cityModel, areaModel) in
-                print("provinceModel:\(String(describing: provinceModel?.name))")
-                print("cityModel:\(String(describing: cityModel?.name))")
-                print("areaModel:\(String(describing: areaModel?.name))")
-            }
+            
         }
         else if sender.tag == 1 {
-            SFAddressPickerView.showPickerWithTitle("地址对象方法", defaultIndexs: nil) { (provinceModel, cityModel, areaModel) in
-                print("provinceModel:\(String(describing: provinceModel?.name))")
-                print("cityModel:\(String(describing: cityModel?.name))")
-                print("areaModel:\(String(describing: areaModel?.name))")
-            }
+            
         }
     }
     
