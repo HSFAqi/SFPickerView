@@ -8,9 +8,8 @@
 
 import Foundation
 
-
+// MARK: - Bundle
 public extension Bundle {
-    
     /// 获取bundle
     /// 先拿到最外面的 bundle。 对 framework 链接方式来说就是 framework 的 bundle 根目录，对静态库链接方式来说就是 target client 的 main bundle，然后再去找下面的 bundle 对象。
     class func getBundle(forClass: AnyClass, resource: String) -> Bundle? {
@@ -18,7 +17,6 @@ public extension Bundle {
         guard let url = bundle.url(forResource: resource, withExtension: "bundle") else { return nil }
         return Bundle.init(url: url)
     }
-    
     /// 获取bundle里的文件
     /// - Parameters:
     ///   - bundle: bundle
@@ -38,5 +36,9 @@ public extension Bundle {
             return nil
         }
     }
+}
+
+// MARK: - UITextField
+public extension UITextField {
     
 }

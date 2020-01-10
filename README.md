@@ -23,6 +23,9 @@ pod 'SFPickerView'
 ## Author
 
 HSFAqi, huangsf_ios@sina.com
+### Join Me
+QQ：895582896
+wechat：hsf8615
 
 ## License
 

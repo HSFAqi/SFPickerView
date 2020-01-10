@@ -56,7 +56,8 @@ public class SFAddressPickerView: SFBasePickerView {
     /// 转模型
     private func addressDataToModel(with data: Any) {
         guard let provinceList = data as? [[String: Any]] else {
-            fatalError()
+            assertionFailure("请传入正确的数据类型")
+            return
         }
         // 获取数据源
         var provinceModelArr = [SFProvinceModel]()
@@ -135,7 +136,5 @@ public class SFAddressPickerView: SFBasePickerView {
             let areaModel = values[2] as? SFAreaModel
             callback(provinceModel, cityModel, areaModel)
         }
-    }
-    
-    
+    }    
 }
