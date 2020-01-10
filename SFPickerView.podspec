@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SFPickerView'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of SFPickerView.'
+  s.version          = '0.1.1'
+  s.summary          = '选择器，支持字符串，地址，时间选择'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+                       使用方便，一行代码即可；
+                       TODO: 完善时间选择器，准备添加手机通讯录手机号选择
                        DESC
 
   s.homepage         = 'https://github.com/HSFAqi/SFPickerView'
