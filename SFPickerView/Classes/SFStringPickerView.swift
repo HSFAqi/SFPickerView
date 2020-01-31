@@ -8,6 +8,8 @@
 
 import UIKit
 
+// TODO:
+
 public class SFStringPickerView: SFBasePickerView {
 
     // MARK: - 单列
@@ -20,7 +22,7 @@ public class SFStringPickerView: SFBasePickerView {
     ///   - isCallbackWhenSelecting: 选择时是否自动回调
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, String?) -> Void)) -> SFBasePickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, appearance: appearance, dataSource: dataSource, defaultIndex: defaultIndex, config: config, callback: callback)
         return pickerView
@@ -33,8 +35,11 @@ public class SFStringPickerView: SFBasePickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, String) -> Void)) {
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataSource: dataSource, defaultIndex: defaultIndex, config: config, callback: callback as! ((Int, SFPickerDataProtocol?) -> Void))
+    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, String?) -> Void)) {
+        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataSource: dataSource, defaultIndex: defaultIndex, config: config) { (index, value) in
+            let string = value as! String?
+            callback(index, string)
+        }
     }
     
     // MARK: - 单列+多列+联动
@@ -47,7 +52,7 @@ public class SFStringPickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) -> SFBasePickerView{
+    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String?]) -> Void)) -> SFBasePickerView{
         let pickerView = SFStringPickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, appearance: appearance, dataType: dataType, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
@@ -60,7 +65,10 @@ public class SFStringPickerView: SFBasePickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String]) -> Void)) {
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: dataType, defaultIndexs: defaultIndexs, config: config, callback: callback as! (([Int], [SFPickerDataProtocol?]) -> Void))
+    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataType: SFPickerDataType, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [String?]) -> Void)) {
+        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: dataType, defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
+            let strings = values as! [String?]
+            callback(indexs, strings)
+        }
     }
 }

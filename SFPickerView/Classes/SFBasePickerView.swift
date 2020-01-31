@@ -29,26 +29,26 @@ public enum SFPickerDataType {
     // 当你不确定数据源类型时，可以选择这个模式，代码会自动到前5中模式中去匹配
     case any(data: [Any?])
     func getUsefulDataType() -> Self {
-        var usefulMode = self
+        var usefulDataType = self
         switch self {
         case .any(data: let data):
             if let d = data as? SFPickerSingleData {
-                usefulMode = .single(data: d)
+                usefulDataType = .single(data: d)
             }
             else if let d = data as? SFPickerMulData {
-                usefulMode = .mul(data: d)
+                usefulDataType = .mul(data: d)
             }
             else if let d = data as? SFPickerLinkgeData {
-                usefulMode = .linkge(data: d)
+                usefulDataType = .linkge(data: d)
             }
             else {
                 assertionFailure("请确保data的数据类型")
             }
             break
         default:
-            usefulMode = self
+            usefulDataType = self
         }
-        return usefulMode
+        return usefulDataType
     }
 }
 // MARK: - SFPickerStyle
@@ -74,14 +74,14 @@ public struct SFPickerImageViewAppearance {
 
 public class SFBasePickerView: SFBaseView {
     
-    // MARK: - Property(private)
-    private lazy var pickerView: UIPickerView = {
+    // MARK: - Property(public)
+    public lazy var pickerView: UIPickerView = {
         let view = UIPickerView()
         view.delegate = self
         view.dataSource = self
         return view
     }()
-    
+    // MARK: - Property(private)
     private(set) var style: SFPickerStyle = .label(appearance: nil) // 样式
     private(set) var dataSource = [Any?]() // 外部传入的数据源
     private(set) var usefulDataSource = [[SFPickerDataProtocol?]]() // 内部使用的数据源
@@ -91,7 +91,6 @@ public class SFBasePickerView: SFBaseView {
     private var mulCallbackBlock: (([Int], [SFPickerDataProtocol?]) -> Void)? // 多列回调
     private var isLinkge: Bool = false // 是否联动
     private var isChanged: Bool = false // 是否更改
-    
     
     // MARK: - ConfigUI
     override func configUI() {
@@ -200,8 +199,32 @@ public class SFBasePickerView: SFBaseView {
         if let s = style {
             self.style = s
         }
-        let usefulMode = dataType.getUsefulDataType()
-        switch usefulMode {
+        if let c = config {
+            self.config = c
+        }
+        self.mulCallbackBlock = callback
+        // 数据源
+        updateDataSource(dataType: dataType, defaultIndexs: defaultIndexs)
+        isChanged = false
+        show()
+        self.alertView.sureBlock = {
+            [weak self] in
+            guard let ws = self else {
+                return
+            }
+            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
+                if let callback = ws.mulCallbackBlock {
+                    callback(ws.selectedIndexs, ws.selectedValues)
+                }
+            }
+            ws.dismiss()
+        }
+    }
+    
+    // MARK: - Func
+    public func updateDataSource(dataType: SFPickerDataType, defaultIndexs: [Int]?) {
+        let usefulDataType = dataType.getUsefulDataType()
+        switch usefulDataType {
         case .single(data: let data):
             isLinkge = false
             self.dataSource = data
@@ -246,27 +269,10 @@ public class SFBasePickerView: SFBaseView {
             assertionFailure("数据源不能为空")
             return
         }
+        // 默认选中值
         initialSeletedValues()
-        if let c = config {
-            self.config = c
-        }
-        self.mulCallbackBlock = callback
-        show()
-        self.alertView.sureBlock = {
-            [weak self] in
-            guard let ws = self else {
-                return
-            }
-            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
-                if let callback = ws.mulCallbackBlock {
-                    callback(ws.selectedIndexs, ws.selectedValues)
-                }
-            }
-            ws.dismiss()
-        }
     }
     
-    // MARK: - Func
     /// 默认选中值
     private func initialSeletedValues() {
         pickerView.reloadAllComponents()
@@ -277,7 +283,7 @@ public class SFBasePickerView: SFBaseView {
         }
     }
     
-    /// 确保选中的values
+    /// 更新选中值
     private func updateSelectedValuesInComponent(_ component: Int) {
         guard usefulDataSource.count > 0,
             usefulDataSource.count > component,
@@ -390,9 +396,10 @@ extension SFBasePickerView: UIPickerViewDelegate {
         selectedIndexs[component] = row
         if isLinkge {
             updateLinkgeDataWhenSelect(component: component)
+        }else{
+            updateSelectedValuesInComponent(component)
         }
         isChanged = true
-        updateSelectedValuesInComponent(component)
         if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
             callback(selectedIndexs[0], selectedValues[0])
         }

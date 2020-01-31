@@ -1,8 +1,8 @@
 //
-//  SFExtension.swift
+//  SFBundleExtension.swift
 //  SFPickerView_Example
 //
-//  Created by 黄山锋 on 2020/1/9.
+//  Created by 黄山锋 on 2020/1/13.
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
@@ -36,9 +36,4 @@ public extension Bundle {
             return nil
         }
     }
-}
-
-// MARK: - UITextField
-public extension UITextField {
-    
 }
