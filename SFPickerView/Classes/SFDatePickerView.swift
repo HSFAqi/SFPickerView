@@ -70,6 +70,7 @@ public class SFDatePickerView: SFBasePickerView {
     private var hoursArr = [String?]()
     private var minutesArr = [String?]()
     private var secondsArr = [String?]()
+    private var currentDataSource = [[String?]]()
     
     private var selYear: String?
     private var selMonth: String?
@@ -94,14 +95,13 @@ public class SFDatePickerView: SFBasePickerView {
         return pickerView
     }
     public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) {
-        let (data, indexs) = getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate)
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .mul(data: data), defaultIndexs: indexs, config: config, callback: callback)
+        getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate)
+        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .mul(data: self.currentDataSource), defaultIndexs: self.selIndexArr, config: config, callback: callback)
     }
     
     /// 获取所有列的数据源
-    func getDataSourceWithMode(_ mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?) -> ([[String?]], [Int]?) {
-        var data = [[String?]]()
-        var indexs = [Int]()
+    func getDataSourceWithMode(_ mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?) {
+        
         // mode
         var usefulMode: SFDateMode
         if let m = mode {
@@ -131,151 +131,7 @@ public class SFDatePickerView: SFBasePickerView {
         self.maxDate = usefulMaxDate
         self.selDate = usefulSelDate
         self.mode = usefulMode
-        // 获取数据源
-        switch usefulMode {
-        case .YMDhms:
-            getDateDataArr(type: .year, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .second, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [yearsArr, monthsArr, daysArr, hoursArr, minutesArr, secondsArr]
-            indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
-            break
-        case .YMDhm:
-            getDateDataArr(type: .year, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [yearsArr, monthsArr, daysArr, hoursArr, minutesArr]
-            indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex]
-            break
-        case .YMDh:
-            getDateDataArr(type: .year, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [yearsArr, monthsArr, daysArr, hoursArr]
-            indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex]
-            break
-        case .YMD:
-            getDateDataArr(type: .year, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [yearsArr, monthsArr, daysArr]
-            indexs = [selYearIndex, selMonthIndex, selDayIndex]
-            break
-        case .YM:
-            getDateDataArr(type: .year, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [yearsArr, monthsArr]
-            indexs = [selYearIndex, selMonthIndex]
-            break
-        case .Y:
-            getDateDataArr(type: .year, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [yearsArr]
-            indexs = [selYearIndex]
-            break
-        case .MDhms:
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .second, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [monthsArr, daysArr, hoursArr, minutesArr, secondsArr]
-            indexs = [selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
-            break
-        case .MDhm:
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [monthsArr, daysArr, hoursArr, minutesArr]
-            indexs = [selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex]
-            break
-        case .MDh:
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [monthsArr, daysArr, hoursArr]
-            indexs = [selMonthIndex, selDayIndex, selHourIndex]
-            break
-        case .MD:
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [monthsArr, daysArr]
-            indexs = [selMonthIndex, selDayIndex]
-            break
-        case .M:
-            getDateDataArr(type: .month, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [monthsArr]
-            indexs = [selMonthIndex, selDayIndex]
-            break
-        case .Dhms:
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .second, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [daysArr, hoursArr, minutesArr, secondsArr]
-            indexs = [selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
-            break
-        case .Dhm:
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [daysArr, hoursArr, minutesArr]
-            indexs = [selDayIndex, selHourIndex, selMinuteIndex]
-            break
-        case .Dh:
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [daysArr, hoursArr]
-            indexs = [selDayIndex, selHourIndex]
-            break
-        case .D:
-            getDateDataArr(type: .day, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [daysArr]
-            indexs = [selDayIndex]
-            break
-        case .hms:
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .second, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [hoursArr, minutesArr, secondsArr]
-            indexs = [selHourIndex, selMinuteIndex, selSecondIndex]
-            break
-        case .hm:
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [hoursArr, minutesArr]
-            indexs = [selHourIndex, selMinuteIndex]
-            break
-        case .h:
-            getDateDataArr(type: .hour, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [hoursArr]
-            indexs = [selHourIndex]
-            break
-        case .ms:
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            getDateDataArr(type: .second, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [minutesArr, secondsArr]
-            indexs = [selMinuteIndex, selSecondIndex]
-            break
-        case .m:
-            getDateDataArr(type: .minute, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [minutesArr]
-            indexs = [selMinuteIndex]
-            break
-        case .s:
-            getDateDataArr(type: .second, minDate: usefulMinDate, maxDate: usefulMaxDate, selDate: usefulSelDate)
-            data = [secondsArr]
-            indexs = [selSecondIndex]
-            break
-        }
-        self.selIndexArr = indexs
-        return (data, indexs)
+        updateCurrentDataSource()
     }
     
     /// 获取date最大最小值
@@ -291,6 +147,158 @@ public class SFDatePickerView: SFBasePickerView {
         return usefulDate
     }
     
+    /// 更新当前数据源
+    func updateCurrentDataSource() {
+        var data = [[String?]]()
+        var indexs = [Int]()
+        switch self.mode {
+        case .YMDhms:
+            getDateDataArr(type: .year)
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            getDateDataArr(type: .second)
+            data = [yearsArr, monthsArr, daysArr, hoursArr, minutesArr, secondsArr]
+            indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
+            break
+        case .YMDhm:
+            getDateDataArr(type: .year)
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            data = [yearsArr, monthsArr, daysArr, hoursArr, minutesArr]
+            indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex]
+            break
+        case .YMDh:
+            getDateDataArr(type: .year)
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            data = [yearsArr, monthsArr, daysArr, hoursArr]
+            indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex]
+            break
+        case .YMD:
+            getDateDataArr(type: .year)
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            data = [yearsArr, monthsArr, daysArr]
+            indexs = [selYearIndex, selMonthIndex, selDayIndex]
+            break
+        case .YM:
+            getDateDataArr(type: .year)
+            getDateDataArr(type: .month)
+            data = [yearsArr, monthsArr]
+            indexs = [selYearIndex, selMonthIndex]
+            break
+        case .Y:
+            getDateDataArr(type: .year)
+            data = [yearsArr]
+            indexs = [selYearIndex]
+            break
+        case .MDhms:
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            getDateDataArr(type: .second)
+            data = [monthsArr, daysArr, hoursArr, minutesArr, secondsArr]
+            indexs = [selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
+            break
+        case .MDhm:
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            data = [monthsArr, daysArr, hoursArr, minutesArr]
+            indexs = [selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex]
+            break
+        case .MDh:
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            data = [monthsArr, daysArr, hoursArr]
+            indexs = [selMonthIndex, selDayIndex, selHourIndex]
+            break
+        case .MD:
+            getDateDataArr(type: .month)
+            getDateDataArr(type: .day)
+            data = [monthsArr, daysArr]
+            indexs = [selMonthIndex, selDayIndex]
+            break
+        case .M:
+            getDateDataArr(type: .month)
+            data = [monthsArr]
+            indexs = [selMonthIndex, selDayIndex]
+            break
+        case .Dhms:
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            getDateDataArr(type: .second)
+            data = [daysArr, hoursArr, minutesArr, secondsArr]
+            indexs = [selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
+            break
+        case .Dhm:
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            data = [daysArr, hoursArr, minutesArr]
+            indexs = [selDayIndex, selHourIndex, selMinuteIndex]
+            break
+        case .Dh:
+            getDateDataArr(type: .day)
+            getDateDataArr(type: .hour)
+            data = [daysArr, hoursArr]
+            indexs = [selDayIndex, selHourIndex]
+            break
+        case .D:
+            getDateDataArr(type: .day)
+            data = [daysArr]
+            indexs = [selDayIndex]
+            break
+        case .hms:
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            getDateDataArr(type: .second)
+            data = [hoursArr, minutesArr, secondsArr]
+            indexs = [selHourIndex, selMinuteIndex, selSecondIndex]
+            break
+        case .hm:
+            getDateDataArr(type: .hour)
+            getDateDataArr(type: .minute)
+            data = [hoursArr, minutesArr]
+            indexs = [selHourIndex, selMinuteIndex]
+            break
+        case .h:
+            getDateDataArr(type: .hour)
+            data = [hoursArr]
+            indexs = [selHourIndex]
+            break
+        case .ms:
+            getDateDataArr(type: .minute)
+            getDateDataArr(type: .second)
+            data = [minutesArr, secondsArr]
+            indexs = [selMinuteIndex, selSecondIndex]
+            break
+        case .m:
+            getDateDataArr(type: .minute)
+            data = [minutesArr]
+            indexs = [selMinuteIndex]
+            break
+        case .s:
+            getDateDataArr(type: .second)
+            data = [secondsArr]
+            indexs = [selSecondIndex]
+            break
+        case .none:
+            break
+        }
+        self.selIndexArr = indexs
+        self.currentDataSource = data
+    }
+    
     /// 获取某一列的数据源
     private enum SFDateDataType {
         case year
@@ -300,7 +308,7 @@ public class SFDatePickerView: SFBasePickerView {
         case minute
         case second
     }
-    private func getDateDataArr(type: SFDateDataType, minDate: Date, maxDate: Date, selDate: Date) {
+    private func getDateDataArr(type: SFDateDataType) {
         guard selDate >= minDate, selDate <= maxDate else {
             assertionFailure("请传入正确的时间")
             fatalError()
@@ -314,42 +322,42 @@ public class SFDatePickerView: SFBasePickerView {
         case .year:
             min = minDate.year
             max = maxDate.year
-            selValue = String(selDate.year)
+            selValue = String.init(format: "%02d", selDate.year)
             break
         case .month:
             let startDate = Date.startDateOf(component: .year, date: selDate)
             let endDate = Date.endDateOf(component: .year, date: selDate)
             min = (minDate > startDate) ? minDate.month : startDate.month
             max = (maxDate < endDate) ? maxDate.month : endDate.month
-            selValue = String(selDate.month)
+            selValue = String.init(format: "%02d", selDate.month)
             break
         case .day:
             let startDate = Date.startDateOf(component: .month, date: selDate)
             let endDate = Date.endDateOf(component: .month, date: selDate)
             min = (minDate > startDate) ? minDate.day : startDate.day
             max = (maxDate < endDate) ? maxDate.day : endDate.day
-            selValue = String(selDate.day)
+            selValue = String.init(format: "%02d", selDate.day)
             break
         case .hour:
             let startDate = Date.startDateOf(component: .day, date: selDate)
             let endDate = Date.endDateOf(component: .day, date: selDate)
             min = (minDate > startDate) ? minDate.hour : startDate.hour
             max = (maxDate < endDate) ? maxDate.hour : endDate.hour
-            selValue = String(selDate.hour)
+            selValue = String.init(format: "%02d", selDate.hour)
             break
         case .minute:
             let startDate = Date.startDateOf(component: .hour, date: selDate)
             let endDate = Date.endDateOf(component: .hour, date: selDate)
             min = (minDate > startDate) ? minDate.minute : startDate.minute
             max = (maxDate < endDate) ? maxDate.minute : endDate.minute
-            selValue = String(selDate.minute)
+            selValue = String.init(format: "%02d", selDate.minute)
             break
         case .second:
             let startDate = Date.startDateOf(component: .minute, date: selDate)
             let endDate = Date.endDateOf(component: .minute, date: selDate)
             min = (minDate > startDate) ? minDate.second : startDate.second
             max = (maxDate < endDate) ? maxDate.second : endDate.second
-            selValue = String(selDate.second)
+            selValue = String.init(format: "%02d", selDate.second)
             break
         }
         let range = min...max
@@ -396,19 +404,24 @@ public class SFDatePickerView: SFBasePickerView {
         }
     }
     
+    
     /// 【重写】didSelect
     public override func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         super.pickerView(pickerView, didSelectRow: row, inComponent: component)
-        updateSelDateWithMode(self.mode, component: component)
-        getDataSourceWithMode(self.mode, minDate: self.minDate, maxDate: self.maxDate, selDate: self.selDate)
-        
+        updateSelDateWithComponent(component, row: row)
+        updateCurrentDataSource()
+        updateDataSource(dataType: .mul(data: self.currentDataSource), defaultIndexs: self.selIndexArr)
+        for (component, row) in self.selIndexArr.enumerated() {
+            self.pickerView.reloadComponent(component)
+            self.pickerView.selectRow(row, inComponent: component, animated: true)
+        }
     }
     
     
     /// 选取选中列和行（component、row）时需要更换的数据源
-    func updateSelDateWithMode(_ mode: SFDateMode, component: Int) {
-        var types: [SFDateDataType]
-        switch mode {
+    func updateSelDateWithComponent(_ component: Int, row: Int) {
+        var types = [SFDateDataType]()
+        switch self.mode {
         case .YMDhms:
             types = [.year, .month, .day, .hour, .minute, .second]
             break
@@ -472,9 +485,11 @@ public class SFDatePickerView: SFBasePickerView {
         case .s:
             types = [.minute]
             break
+        case .none:
+            break
         }
         let type = types[component]
-        var date = updateSelDate(type: type)
+        var date = updateSelDate(type: type, row: row)
         if date > self.maxDate {
             date = self.maxDate
         }
@@ -484,44 +499,44 @@ public class SFDatePickerView: SFBasePickerView {
         self.selDate = date
     }
     
-    private func updateSelDate(type: SFDateDataType) -> Date {
+    private func updateSelDate(type: SFDateDataType, row: Int) -> Date {
         var oldValue: String?
         var newValue: String?
         var during: Int
         var date: Date
         switch type {
         case .year:
-            newValue = yearsArr[selYearIndex]
+            newValue = yearsArr[row]
             oldValue = selYear
             during = Int(newValue!)! - Int(oldValue!)!
             date = self.selDate.dateByAddingYears(during)
             break
         case .month:
-            newValue = monthsArr[selMonthIndex]
+            newValue = monthsArr[row]
             oldValue = selMonth
             during = Int(newValue!)! - Int(oldValue!)!
             date = self.selDate.dateByAddingMonths(during)
             break
         case .day:
-            newValue = daysArr[selDayIndex]
+            newValue = daysArr[row]
             oldValue = selDay
             during = Int(newValue!)! - Int(oldValue!)!
             date = self.selDate.dateByAddingDays(during)
             break
         case .hour:
-            newValue = hoursArr[selHourIndex]
+            newValue = hoursArr[row]
             oldValue = selHour
             during = Int(newValue!)! - Int(oldValue!)!
             date = self.selDate.dateByAddingHours(during)
             break
         case .minute:
-            newValue = minutesArr[selHourIndex]
+            newValue = minutesArr[row]
             oldValue = selMinute
             during = Int(newValue!)! - Int(oldValue!)!
             date = self.selDate.dateByAddingMinutes(during)
             break
         case .second:
-            newValue = secondsArr[selHourIndex]
+            newValue = secondsArr[row]
             oldValue = selSecond
             during = Int(newValue!)! - Int(oldValue!)!
             date = self.selDate.dateByAddingSeconds(during)

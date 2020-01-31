@@ -81,10 +81,17 @@ class ViewController: UIViewController {
     // date
     @IBAction func dateAction(_ sender: UIButton) {
         if sender.tag == 0 {
-            
+            let pickerView = SFDatePickerView(frame: CGRect.zero)
+            pickerView.showPickerWithTitle("日期-对象方法", appearance: nil, mode: nil, minDate: nil, maxDate: nil, selDate: nil, config: nil) { (indexs, values) in
+                print("indexs：\(indexs)")
+                print("values：\(values)")
+            }
         }
         else if sender.tag == 1 {
-            
+            SFDatePickerView.showPickerWithTitle("日期-类方法", appearance: nil, mode: nil, minDate: nil, maxDate: nil, selDate: nil, config: nil) { (indexs, values) in
+                print("indexs：\(indexs)")
+                print("values：\(values)")
+            }
         }
     }
     
