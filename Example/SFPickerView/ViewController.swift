@@ -23,14 +23,16 @@ class ViewController: UIViewController {
     // MARK: - string
     @IBAction func stringAction(_ sender: UIButton) {
         let dataSource0 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        
+        let imageDataSource = ["download-0", "download-1", "download-2", "download-3", "download-4", "download-5"]
         
         if sender.tag == 0 {
-            let pickerView = SFStringPickerView(frame: CGRect.zero)
-            pickerView.showPickerWithTitle("单列-对象方法", appearance: nil, dataSource: dataSource0, defaultIndex: 3, config: nil) { (index, value) in
+            let pickerView = SFImagePickerView(frame: CGRect.zero)
+            pickerView.config.rowHeight = 100
+            pickerView.showImagePickerWithTitle("图片", appearance: nil, dataSource: imageDataSource, defaultIndex: nil, config: nil) { (index, image) in
                 print("index：\(index)")
-                print("value：\(value)")
+                print("image：\(image)")
             }
+            
             
         }
         else if sender.tag == 1 {
@@ -86,7 +88,7 @@ class ViewController: UIViewController {
         let selDate = Date()
         if sender.tag == 0 {
             let pickerView = SFDatePickerView(frame: CGRect.zero)
-            pickerView.showPickerWithTitle("时间-对象方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: "yyyy", config: nil) { (date, dateString) in
+            pickerView.showPickerWithTitle("时间-对象方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: nil, config: nil) { (date, dateString) in
                 print("date：\(date)")
                 print("dateString：\(dateString)")
             }

@@ -424,7 +424,13 @@ extension SFBasePickerView: UIPickerViewDelegate {
             label.text = value as? String
         }
         else if let imageView = view as? UIImageView {
-            imageView.image = value as? UIImage
+            if let image = value as? UIImage {
+                imageView.image = image
+            }
+            else if let imageName = value as? String {
+                imageView.image = UIImage(named: imageName)
+            }
+            // 暂时不添加网络图片功能
         }
     }
     
