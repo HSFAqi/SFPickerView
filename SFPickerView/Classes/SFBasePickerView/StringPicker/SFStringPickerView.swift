@@ -104,11 +104,11 @@ public class SFStringPickerView: SFBasePickerView {
     public final func showStringPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [String?]) -> Void)) {
         self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .linkge(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
             let models = values as! [SFPickerModel?]
-            var values = [String?]()
+            var strings = [String?]()
             for model in models {
-                values.append(model?.value as? String)
+                strings.append(model?.value as? String)
             }
-            callback(indexs, models, values)
+            callback(indexs, models, strings)
         }
     }
 }

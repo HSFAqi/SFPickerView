@@ -102,7 +102,7 @@ public class SFImagePickerView: SFBasePickerView {
     public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [UIImage?]) -> Void)) {
         self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .linkge(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
             let models = values as! [SFPickerModel?]
-            var values = [UIImage?]()
+            var images = [UIImage?]()
             for model in models {
                 var image: UIImage?
                 if let img = model?.value as? UIImage {
@@ -111,10 +111,10 @@ public class SFImagePickerView: SFBasePickerView {
                 else if let imageName = model?.value as? String {
                     image = UIImage(named: imageName)
                 }
-                values.append(image)
+                images.append(image)
                 // 暂时不添加网络图片功能
             }
-            callback(indexs, models, values)
+            callback(indexs, models, images)
         }
     }
 }

@@ -397,9 +397,8 @@ extension SFBasePickerView: UIPickerViewDelegate {
         selectedIndexs[component] = row
         if isLinkge {
             updateLinkgeDataWhenSelect(component: component)
-        }else{
-            updateSelectedValuesInComponent(component)
         }
+        updateSelectedValuesInComponent(component)
         isChanged = true
         if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
             callback(selectedIndexs[0], selectedValues[0])
