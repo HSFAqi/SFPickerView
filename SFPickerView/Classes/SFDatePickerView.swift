@@ -9,61 +9,61 @@
 import UIKit
 import Foundation
 
-public class SFDatePickerView: SFBasePickerView {
+/// 枚举类型
+/// case命名规范：年月日YMD（大写），时分秒hms（小写）
+public enum SFDateMode: String {
+    /// 年月日时分秒
+    case YMDhms = "yyyy/MM/dd HH:mm:ss"
+    /// 年月日时分
+    case YMDhm = "yyyy/MM/dd HH:mm"
+    /// 年月日时
+    case YMDh = "yyyy/MM/dd HH"
+    /// 年月日
+    case YMD = "yyyy/MM/dd"
+    /// 年月
+    case YM = "yyyy/MM"
+    /// 年
+    case Y = "yyyy"
+    /// 月日时分秒
+    case MDhms = "MM/dd HH:mm:ss"
+    /// 月日时分
+    case MDhm = "MM/dd HH:mm"
+    /// 月日时
+    case MDh = "MM/dd HH"
+    /// 月日
+    case MD = "MM/dd"
+    /// 月
+    case M = "MM"
+    /// 日时分秒
+    case Dhms = "dd HH:mm:ss"
+    /// 日时分
+    case Dhm = "dd HH:mm"
+    /// 日时
+    case Dh = "dd HH"
+    /// 日
+    case D = "dd"
+    /// 时分秒
+    case hms = "HH:mm:ss"
+    /// 时分
+    case hm = "HH:mm"
+    /// 时
+    case h = "HH"
+    /// 分秒
+    case ms = "mm:ss"
+    /// 分
+    case m = "mm"
+    /// 秒
+    case s = "ss"
+}
 
-    /// 枚举类型
-    /// case命名规范：年月日YMD（大写），时分秒hms（小写）
-    public enum SFDateMode: String {
-        /// 年月日时分秒
-        case YMDhms = "yyyy/MM/dd HH:mm:ss"
-        /// 年月日时分
-        case YMDhm = "yyyy/MM/dd HH:mm"
-        /// 年月日时
-        case YMDh = "yyyy/MM/dd HH"
-        /// 年月日
-        case YMD = "yyyy/MM/dd"
-        /// 年月
-        case YM = "yyyy/MM"
-        /// 年
-        case Y = "yyyy"
-        /// 月日时分秒
-        case MDhms = "MM/dd HH:mm:ss"
-        /// 月日时分
-        case MDhm = "MM/dd HH:mm"
-        /// 月日时
-        case MDh = "MM/dd HH"
-        /// 月日
-        case MD = "MM/dd"
-        /// 月
-        case M = "MM"
-        /// 日时分秒
-        case Dhms = "dd HH:mm:ss"
-        /// 日时分
-        case Dhm = "dd HH:mm"
-        /// 日时
-        case Dh = "dd HH"
-        /// 日
-        case D = "dd"
-        /// 时分秒
-        case hms = "HH:mm:ss"
-        /// 时分
-        case hm = "HH:mm"
-        /// 时
-        case h = "HH"
-        /// 分秒
-        case ms = "mm:ss"
-        /// 分
-        case m = "mm"
-        /// 秒
-        case s = "ss"
-    }
-    // MARK: - Property(public)
-    private var minDate: Date!
-    private var maxDate: Date!
-    private var selDate: Date!
-    private var mode: SFDateMode!
+public class SFDatePickerView: SFStringPickerView {
+
+    // MARK: - Property(private)
+    private(set) var minDate: Date!
+    private(set) var maxDate: Date!
+    private(set) var selDate: Date!
+    private(set) var mode: SFDateMode!
     
-    // MARK: - Property(private)    
     private var yearsArr = [String?]()
     private var monthsArr = [String?]()
     private var daysArr = [String?]()
@@ -88,19 +88,43 @@ public class SFDatePickerView: SFBasePickerView {
     private var selSecondIndex = 0
     private var selIndexArr = [Int]()
     
+    /// 【Date】类方法
+    /// - Parameters:
+    ///   - title: 标题
+    ///   - appearance: 自定义外观
+    ///   - mode: 模式
+    ///   - minDate: 时间最小值
+    ///   - maxDate: 时间最大值
+    ///   - selDate: 当前时间选中值
+    ///   - config: 配置
+    ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) -> SFDatePickerView {
+    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) -> SFDatePickerView {
         let pickerView = SFDatePickerView(frame: CGRect.zero)
         pickerView.showPickerWithTitle(title, appearance: appearance, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, config: config, callback: callback)
         return pickerView
     }
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping (([Int], [SFPickerDataProtocol?]) -> Void)) {
+    
+    /// 【Date】对象方法
+    /// - Parameters:
+    ///   - title: 标题
+    ///   - appearance: 自定义外观
+    ///   - mode: 模式
+    ///   - minDate: 时间最小值
+    ///   - maxDate: 时间最大值
+    ///   - selDate: 当前时间选中值
+    ///   - config: 配置
+    ///   - callback: 回调
+    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) {
         getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate)
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .mul(data: self.currentDataSource), defaultIndexs: self.selIndexArr, config: config, callback: callback)
+        self.showPickerWithTitle(title, appearance: appearance, dataType: .mul(data: self.currentDataSource), defaultIndexs: self.selIndexArr, config: config) { (indexs, values) in
+            let dateString = self.selDate.stringWithFormat(self.mode.rawValue)
+            callback(self.selDate, dateString)
+        }
     }
     
     /// 获取所有列的数据源
-    func getDataSourceWithMode(_ mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?) {
+    private func getDataSourceWithMode(_ mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?) {
         
         // mode
         var usefulMode: SFDateMode
@@ -148,7 +172,7 @@ public class SFDatePickerView: SFBasePickerView {
     }
     
     /// 更新当前数据源
-    func updateCurrentDataSource() {
+    private func updateCurrentDataSource() {
         var data = [[String?]]()
         var indexs = [Int]()
         switch self.mode {
@@ -417,9 +441,8 @@ public class SFDatePickerView: SFBasePickerView {
         }
     }
     
-    
     /// 选取选中列和行（component、row）时需要更换的数据源
-    func updateSelDateWithComponent(_ component: Int, row: Int) {
+    private func updateSelDateWithComponent(_ component: Int, row: Int) {
         var types = [SFDateDataType]()
         switch self.mode {
         case .YMDhms:
@@ -499,6 +522,7 @@ public class SFDatePickerView: SFBasePickerView {
         self.selDate = date
     }
     
+    /// 更新选中时间selDate
     private func updateSelDate(type: SFDateDataType, row: Int) -> Date {
         var oldValue: String?
         var newValue: String?

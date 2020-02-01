@@ -80,17 +80,21 @@ class ViewController: UIViewController {
     
     // date
     @IBAction func dateAction(_ sender: UIButton) {
+        let mode = SFDateMode.YMDhms
+        let minDate = Date.init(timeInterval: -24*3600, since: Date())
+        let maxDate = Date.init(timeInterval: 24*3600, since: Date())
+        let selDate = Date()
         if sender.tag == 0 {
             let pickerView = SFDatePickerView(frame: CGRect.zero)
-            pickerView.showPickerWithTitle("日期-对象方法", appearance: nil, mode: nil, minDate: nil, maxDate: nil, selDate: nil, config: nil) { (indexs, values) in
-                print("indexs：\(indexs)")
-                print("values：\(values)")
+            pickerView.showPickerWithTitle("时间-对象方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, config: nil) { (date, dateString) in
+                print("date：\(date)")
+                print("dateString：\(dateString)")
             }
         }
         else if sender.tag == 1 {
-            SFDatePickerView.showPickerWithTitle("日期-类方法", appearance: nil, mode: nil, minDate: nil, maxDate: nil, selDate: nil, config: nil) { (indexs, values) in
-                print("indexs：\(indexs)")
-                print("values：\(values)")
+            SFDatePickerView.showPickerWithTitle("时间-类方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, config: nil) { (date, dateString) in
+                print("date：\(date)")
+                print("dateString：\(dateString)")
             }
         }
     }
