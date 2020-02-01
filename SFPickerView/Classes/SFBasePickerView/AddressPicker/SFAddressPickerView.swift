@@ -12,9 +12,7 @@ import UIKit
 // 1，模式选择（省，市，区，省市，市区，省市区）
 // 2，支持外部传入数据源（本地文件）
 
-public class SFAddressPickerView: SFBasePickerView {
-    
-    
+public class SFAddressPickerView: SFBasePickerView {    
     /// 模式
     /// "p" = "province", "c" == "city", "a" == "area"
     public enum SFAddressPickerMode {
