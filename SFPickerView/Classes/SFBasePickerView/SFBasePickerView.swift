@@ -13,8 +13,9 @@ public protocol SFPickerDataProtocol {}
 extension UIImage: SFPickerDataProtocol { }
 extension String: SFPickerDataProtocol { }
 public class SFPickerModel: SFPickerDataProtocol {
-    var value: SFPickerDataProtocol?
-    var nextList: [Any?]?
+    public var value: SFPickerDataProtocol?
+    public var nextList: [Any?]?
+    public init() { }
 }
 
 public typealias SFPickerSingleData = [SFPickerDataProtocol?]

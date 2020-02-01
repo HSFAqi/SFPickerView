@@ -128,7 +128,7 @@ public class SFDatePickerView: SFStringPickerView {
     ///   - callback: 回调
     public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) {
         getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: format)
-        self.showStringPickerWithTitle(title, appearance: appearance, dataType: .mul(data: self.currentDataSource), defaultIndexs: self.selIndexArr, config: config) { (indexs, values) in
+        self.showStringPickerWithTitle(title, appearance: appearance, dataSource: self.currentDataSource, defaultIndexs: self.selIndexArr, config: config) { (indexs, values) in
             let dateString = self.selDate.stringWithFormat(self.format)
             callback(self.selDate, dateString)
         }
