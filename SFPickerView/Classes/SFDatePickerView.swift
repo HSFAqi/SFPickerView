@@ -9,6 +9,10 @@
 import UIKit
 import Foundation
 
+// TODO:
+// 1，语言本地化
+// 2，自定义时间格式化
+
 /// 枚举类型
 /// case命名规范：年月日YMD（大写），时分秒hms（小写）
 public enum SFDateMode: String {
@@ -63,22 +67,29 @@ public class SFDatePickerView: SFStringPickerView {
     private(set) var maxDate: Date!
     private(set) var selDate: Date!
     private(set) var mode: SFDateMode!
+    private(set) var format: String!
     
-    private var yearsArr = [String?]()
-    private var monthsArr = [String?]()
-    private var daysArr = [String?]()
-    private var hoursArr = [String?]()
-    private var minutesArr = [String?]()
-    private var secondsArr = [String?]()
+    private var yearsValueArr = [String?]()
+    private var monthsValueArr = [String?]()
+    private var daysValueArr = [String?]()
+    private var hoursValueArr = [String?]()
+    private var minutesValueArr = [String?]()
+    private var secondsValueArr = [String?]()
     private var currentDataSource = [[String?]]()
     
-    private var selYear: String?
-    private var selMonth: String?
-    private var selDay: String?
-    private var selHour: String?
-    private var selMinute: String?
-    private var selSecond: String?
-    private var selValueArr = [String?]()
+    private var yearsArr = [Int?]()
+    private var monthsArr = [Int?]()
+    private var daysArr = [Int?]()
+    private var hoursArr = [Int?]()
+    private var minutesArr = [Int?]()
+    private var secondsArr = [Int?]()
+    
+    private var selYear: Int?
+    private var selMonth: Int?
+    private var selDay: Int?
+    private var selHour: Int?
+    private var selMinute: Int?
+    private var selSecond: Int?
     
     private var selYearIndex = 0
     private var selMonthIndex = 0
@@ -99,9 +110,9 @@ public class SFDatePickerView: SFStringPickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) -> SFDatePickerView {
+    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) -> SFDatePickerView {
         let pickerView = SFDatePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, appearance: appearance, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, config: config, callback: callback)
+        pickerView.showPickerWithTitle(title, appearance: appearance, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: format, config: config, callback: callback)
         return pickerView
     }
     
@@ -115,23 +126,27 @@ public class SFDatePickerView: SFStringPickerView {
     ///   - selDate: 当前时间选中值
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) {
-        getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate)
+    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) {
+        getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: format)
         self.showPickerWithTitle(title, appearance: appearance, dataType: .mul(data: self.currentDataSource), defaultIndexs: self.selIndexArr, config: config) { (indexs, values) in
-            let dateString = self.selDate.stringWithFormat(self.mode.rawValue)
+            let dateString = self.selDate.stringWithFormat(self.format)
             callback(self.selDate, dateString)
         }
     }
     
     /// 获取所有列的数据源
-    private func getDataSourceWithMode(_ mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?) {
-        
+    private func getDataSourceWithMode(_ mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?) {
         // mode
         var usefulMode: SFDateMode
         if let m = mode {
             usefulMode = m
         }else{
             usefulMode = .YMDhms
+        }
+        if let usefulFormat = format {
+            self.format = usefulFormat
+        }else{
+            self.format = usefulMode.rawValue
         }
         // date最小值
         let usefulMinDate = getUsefulDate(minDate, mode: usefulMode, isMin: true)
@@ -183,7 +198,7 @@ public class SFDatePickerView: SFStringPickerView {
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
             getDateDataArr(type: .second)
-            data = [yearsArr, monthsArr, daysArr, hoursArr, minutesArr, secondsArr]
+            data = [yearsValueArr, monthsValueArr, daysValueArr, hoursValueArr, minutesValueArr, secondsValueArr]
             indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
             break
         case .YMDhm:
@@ -192,7 +207,7 @@ public class SFDatePickerView: SFStringPickerView {
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
-            data = [yearsArr, monthsArr, daysArr, hoursArr, minutesArr]
+            data = [yearsValueArr, monthsValueArr, daysValueArr, hoursValueArr, minutesValueArr]
             indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex]
             break
         case .YMDh:
@@ -200,25 +215,25 @@ public class SFDatePickerView: SFStringPickerView {
             getDateDataArr(type: .month)
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
-            data = [yearsArr, monthsArr, daysArr, hoursArr]
+            data = [yearsValueArr, monthsValueArr, daysValueArr, hoursValueArr]
             indexs = [selYearIndex, selMonthIndex, selDayIndex, selHourIndex]
             break
         case .YMD:
             getDateDataArr(type: .year)
             getDateDataArr(type: .month)
             getDateDataArr(type: .day)
-            data = [yearsArr, monthsArr, daysArr]
+            data = [yearsValueArr, monthsValueArr, daysValueArr]
             indexs = [selYearIndex, selMonthIndex, selDayIndex]
             break
         case .YM:
             getDateDataArr(type: .year)
             getDateDataArr(type: .month)
-            data = [yearsArr, monthsArr]
+            data = [yearsValueArr, monthsValueArr]
             indexs = [selYearIndex, selMonthIndex]
             break
         case .Y:
             getDateDataArr(type: .year)
-            data = [yearsArr]
+            data = [yearsValueArr]
             indexs = [selYearIndex]
             break
         case .MDhms:
@@ -227,7 +242,7 @@ public class SFDatePickerView: SFStringPickerView {
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
             getDateDataArr(type: .second)
-            data = [monthsArr, daysArr, hoursArr, minutesArr, secondsArr]
+            data = [monthsValueArr, daysValueArr, hoursValueArr, minutesValueArr, secondsValueArr]
             indexs = [selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
             break
         case .MDhm:
@@ -235,85 +250,85 @@ public class SFDatePickerView: SFStringPickerView {
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
-            data = [monthsArr, daysArr, hoursArr, minutesArr]
+            data = [monthsValueArr, daysValueArr, hoursValueArr, minutesValueArr]
             indexs = [selMonthIndex, selDayIndex, selHourIndex, selMinuteIndex]
             break
         case .MDh:
             getDateDataArr(type: .month)
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
-            data = [monthsArr, daysArr, hoursArr]
+            data = [monthsValueArr, daysValueArr, hoursValueArr]
             indexs = [selMonthIndex, selDayIndex, selHourIndex]
             break
         case .MD:
             getDateDataArr(type: .month)
             getDateDataArr(type: .day)
-            data = [monthsArr, daysArr]
+            data = [monthsValueArr, daysValueArr]
             indexs = [selMonthIndex, selDayIndex]
             break
         case .M:
             getDateDataArr(type: .month)
-            data = [monthsArr]
-            indexs = [selMonthIndex, selDayIndex]
+            data = [monthsValueArr]
+            indexs = [selMonthIndex]
             break
         case .Dhms:
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
             getDateDataArr(type: .second)
-            data = [daysArr, hoursArr, minutesArr, secondsArr]
+            data = [daysValueArr, hoursValueArr, minutesValueArr, secondsValueArr]
             indexs = [selDayIndex, selHourIndex, selMinuteIndex, selSecondIndex]
             break
         case .Dhm:
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
-            data = [daysArr, hoursArr, minutesArr]
+            data = [daysValueArr, hoursValueArr, minutesValueArr]
             indexs = [selDayIndex, selHourIndex, selMinuteIndex]
             break
         case .Dh:
             getDateDataArr(type: .day)
             getDateDataArr(type: .hour)
-            data = [daysArr, hoursArr]
+            data = [daysValueArr, hoursValueArr]
             indexs = [selDayIndex, selHourIndex]
             break
         case .D:
             getDateDataArr(type: .day)
-            data = [daysArr]
+            data = [daysValueArr]
             indexs = [selDayIndex]
             break
         case .hms:
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
             getDateDataArr(type: .second)
-            data = [hoursArr, minutesArr, secondsArr]
+            data = [hoursValueArr, minutesValueArr, secondsValueArr]
             indexs = [selHourIndex, selMinuteIndex, selSecondIndex]
             break
         case .hm:
             getDateDataArr(type: .hour)
             getDateDataArr(type: .minute)
-            data = [hoursArr, minutesArr]
+            data = [hoursValueArr, minutesValueArr]
             indexs = [selHourIndex, selMinuteIndex]
             break
         case .h:
             getDateDataArr(type: .hour)
-            data = [hoursArr]
+            data = [hoursValueArr]
             indexs = [selHourIndex]
             break
         case .ms:
             getDateDataArr(type: .minute)
             getDateDataArr(type: .second)
-            data = [minutesArr, secondsArr]
+            data = [minutesValueArr, secondsValueArr]
             indexs = [selMinuteIndex, selSecondIndex]
             break
         case .m:
             getDateDataArr(type: .minute)
-            data = [minutesArr]
+            data = [minutesValueArr]
             indexs = [selMinuteIndex]
             break
         case .s:
             getDateDataArr(type: .second)
-            data = [secondsArr]
+            data = [secondsValueArr]
             indexs = [selSecondIndex]
             break
         case .none:
@@ -337,59 +352,69 @@ public class SFDatePickerView: SFStringPickerView {
             assertionFailure("请传入正确的时间")
             fatalError()
         }
-        var dataArr = [String?]()
-        var selValue = ""
+        var dataArr = [Int?]()
+        var dataValueArr = [String?]()
+        var selInt: Int!
         var selIndex = 0
         var min: Int = 0
         var max: Int = 0
+        var unit: String = ""
         switch type {
         case .year:
             min = minDate.year
             max = maxDate.year
-            selValue = String.init(format: "%02d", selDate.year)
+            unit = "年"
+            selInt = selDate.year
             break
         case .month:
             let startDate = Date.startDateOf(component: .year, date: selDate)
             let endDate = Date.endDateOf(component: .year, date: selDate)
             min = (minDate > startDate) ? minDate.month : startDate.month
             max = (maxDate < endDate) ? maxDate.month : endDate.month
-            selValue = String.init(format: "%02d", selDate.month)
+            unit = "月"
+            selInt = selDate.month
             break
         case .day:
             let startDate = Date.startDateOf(component: .month, date: selDate)
             let endDate = Date.endDateOf(component: .month, date: selDate)
             min = (minDate > startDate) ? minDate.day : startDate.day
             max = (maxDate < endDate) ? maxDate.day : endDate.day
-            selValue = String.init(format: "%02d", selDate.day)
+            unit = "日"
+            selInt = selDate.day
             break
         case .hour:
             let startDate = Date.startDateOf(component: .day, date: selDate)
             let endDate = Date.endDateOf(component: .day, date: selDate)
             min = (minDate > startDate) ? minDate.hour : startDate.hour
             max = (maxDate < endDate) ? maxDate.hour : endDate.hour
-            selValue = String.init(format: "%02d", selDate.hour)
+            unit = "时"
+            selInt = selDate.hour
             break
         case .minute:
             let startDate = Date.startDateOf(component: .hour, date: selDate)
             let endDate = Date.endDateOf(component: .hour, date: selDate)
             min = (minDate > startDate) ? minDate.minute : startDate.minute
             max = (maxDate < endDate) ? maxDate.minute : endDate.minute
-            selValue = String.init(format: "%02d", selDate.minute)
+            unit = "分"
+            selInt = selDate.minute
             break
         case .second:
             let startDate = Date.startDateOf(component: .minute, date: selDate)
             let endDate = Date.endDateOf(component: .minute, date: selDate)
             min = (minDate > startDate) ? minDate.second : startDate.second
             max = (maxDate < endDate) ? maxDate.second : endDate.second
-            selValue = String.init(format: "%02d", selDate.second)
+            unit = "秒"
+            selInt = selDate.second
             break
         }
         let range = min...max
         for i in range {
-            dataArr.append(String.init(format: "%02d", i))
+            dataArr.append(i)
+            dataValueArr.append(String.init(format: "%02d%@", i, unit))
         }
-        for (idx, value) in dataArr.enumerated() {
-            if value == selValue {
+        let selValueWithUnit = String.init(format: "%02d%@", selInt, unit)
+        for (idx, value) in dataValueArr.enumerated() {
+            if value == selValueWithUnit {
                 selIndex = idx
                 break
             }
@@ -397,37 +422,42 @@ public class SFDatePickerView: SFStringPickerView {
         switch type {
         case .year:
             yearsArr = dataArr
-            selYear = selValue
+            yearsValueArr = dataValueArr
+            selYear = selInt
             selYearIndex = selIndex
             break
         case .month:
             monthsArr = dataArr
-            selMonth = selValue
+            monthsValueArr = dataValueArr
+            selMonth = selInt
             selMonthIndex = selIndex
             break
         case .day:
             daysArr = dataArr
-            selDay = selValue
+            daysValueArr = dataValueArr
+            selDay = selInt
             selDayIndex = selIndex
             break
         case .hour:
             hoursArr = dataArr
-            selHour = selValue
+            hoursValueArr = dataValueArr
+            selHour = selInt
             selHourIndex = selIndex
             break
         case .minute:
             minutesArr = dataArr
-            selMinute = selValue
+            minutesValueArr = dataValueArr
+            selMinute = selInt
             selMinuteIndex = selIndex
             break
         case .second:
             secondsArr = dataArr
-            selSecond = selValue
+            secondsValueArr = dataValueArr
+            selSecond = selInt
             selSecondIndex = selIndex
             break
         }
     }
-    
     
     /// 【重写】didSelect
     public override func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -524,45 +554,45 @@ public class SFDatePickerView: SFStringPickerView {
     
     /// 更新选中时间selDate
     private func updateSelDate(type: SFDateDataType, row: Int) -> Date {
-        var oldValue: String?
-        var newValue: String?
+        var oldValue: Int?
+        var newValue: Int?
         var during: Int
         var date: Date
         switch type {
         case .year:
             newValue = yearsArr[row]
             oldValue = selYear
-            during = Int(newValue!)! - Int(oldValue!)!
+            during = newValue! - oldValue!
             date = self.selDate.dateByAddingYears(during)
             break
         case .month:
             newValue = monthsArr[row]
             oldValue = selMonth
-            during = Int(newValue!)! - Int(oldValue!)!
+            during = newValue! - oldValue!
             date = self.selDate.dateByAddingMonths(during)
             break
         case .day:
             newValue = daysArr[row]
             oldValue = selDay
-            during = Int(newValue!)! - Int(oldValue!)!
+            during = newValue! - oldValue!
             date = self.selDate.dateByAddingDays(during)
             break
         case .hour:
             newValue = hoursArr[row]
             oldValue = selHour
-            during = Int(newValue!)! - Int(oldValue!)!
+            during = newValue! - oldValue!
             date = self.selDate.dateByAddingHours(during)
             break
         case .minute:
             newValue = minutesArr[row]
             oldValue = selMinute
-            during = Int(newValue!)! - Int(oldValue!)!
+            during = newValue! - oldValue!
             date = self.selDate.dateByAddingMinutes(during)
             break
         case .second:
             newValue = secondsArr[row]
             oldValue = selSecond
-            during = Int(newValue!)! - Int(oldValue!)!
+            during = newValue! - oldValue!
             date = self.selDate.dateByAddingSeconds(during)
             break
         }

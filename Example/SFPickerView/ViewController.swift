@@ -86,13 +86,13 @@ class ViewController: UIViewController {
         let selDate = Date()
         if sender.tag == 0 {
             let pickerView = SFDatePickerView(frame: CGRect.zero)
-            pickerView.showPickerWithTitle("时间-对象方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, config: nil) { (date, dateString) in
+            pickerView.showPickerWithTitle("时间-对象方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: "yyyy", config: nil) { (date, dateString) in
                 print("date：\(date)")
                 print("dateString：\(dateString)")
             }
         }
         else if sender.tag == 1 {
-            SFDatePickerView.showPickerWithTitle("时间-类方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, config: nil) { (date, dateString) in
+            SFDatePickerView.showPickerWithTitle("时间-类方法", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: "yyyy", config: nil) { (date, dateString) in
                 print("date：\(date)")
                 print("dateString：\(dateString)")
             }
