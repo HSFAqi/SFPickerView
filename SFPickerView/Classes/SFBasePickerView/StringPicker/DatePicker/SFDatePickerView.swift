@@ -110,9 +110,9 @@ public class SFDatePickerView: SFStringPickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) -> SFDatePickerView {
+    public final class func showDatePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) -> SFDatePickerView {
         let pickerView = SFDatePickerView(frame: CGRect.zero)
-        pickerView.showPickerWithTitle(title, appearance: appearance, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: format, config: config, callback: callback)
+        pickerView.showDatePickerWithTitle(title, appearance: appearance, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: format, config: config, callback: callback)
         return pickerView
     }
     
@@ -126,7 +126,7 @@ public class SFDatePickerView: SFStringPickerView {
     ///   - selDate: 当前时间选中值
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) {
+    public final func showDatePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, mode: SFDateMode?, minDate: Date?, maxDate: Date?, selDate: Date?, format: String?, config: SFConfig?, callback: @escaping ((Date, String) -> Void)) {
         getDataSourceWithMode(mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: format)
         self.showStringPickerWithTitle(title, appearance: appearance, dataSource: self.currentDataSource, defaultIndexs: self.selIndexArr, config: config) { (indexs, values) in
             let dateString = self.selDate.stringWithFormat(self.format)

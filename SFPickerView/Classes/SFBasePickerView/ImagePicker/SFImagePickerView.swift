@@ -20,7 +20,7 @@ public class SFImagePickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, UIImage?) -> Void)) -> SFBasePickerView{
+    public final class func showImagePickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, UIImage?) -> Void)) -> SFBasePickerView{
         let pickerView = SFImagePickerView(frame: CGRect.zero)
         pickerView.showImagePickerWithTitle(title, appearance: appearance, dataSource: dataSource, defaultIndex: defaultIndex, config: config, callback: callback)
         return pickerView
@@ -33,12 +33,21 @@ public class SFImagePickerView: SFBasePickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, UIImage?) -> Void)) {
-        guard let _ = dataSource as? [UIImage?] else {
+    public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, UIImage?) -> Void)) {
+        let image = dataSource as? [UIImage?]
+        let imageName = dataSource as? [String?]
+        guard let _: Any = image ?? imageName else {
             return
         }
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataSource: dataSource, defaultIndex: defaultIndex, config: config) { (index, value) in
-            let image = value as! UIImage?
+        self.showPickerWithTitle(title, style: .imageView(appearance: appearance), dataSource: dataSource, defaultIndex: defaultIndex, config: config) { (index, value) in
+            var image: UIImage?
+            if let img = value as? UIImage {
+                image = img
+            }
+            else if let imageName = value as? String {
+                image = UIImage(named: imageName)
+            }
+            // 暂时不添加网络图片功能
             callback(index, image)
         }
     }
@@ -53,7 +62,7 @@ public class SFImagePickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerMulData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage?]) -> Void)) -> SFBasePickerView{
+    public final class func showImagePickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataSource: SFPickerMulData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage?]) -> Void)) -> SFBasePickerView{
         let pickerView = SFImagePickerView(frame: CGRect.zero)
         pickerView.showImagePickerWithTitle(title, appearance: appearance, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
@@ -66,12 +75,25 @@ public class SFImagePickerView: SFBasePickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerMulData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage?]) -> Void)) {
-        guard let _ = dataSource as? [[UIImage?]] else {
+    public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataSource: SFPickerMulData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [UIImage?]) -> Void)) {
+        let image = dataSource as? [[UIImage?]]
+        let imageName = dataSource as? [[String?]]
+        guard let _: Any = image ?? imageName else {
             return
         }
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .mul(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
-            let images = values as! [UIImage?]
+        self.showPickerWithTitle(title, style: .imageView(appearance: appearance), dataType: .mul(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
+            var images = [UIImage?]()
+            for value in values {
+               var image: UIImage?
+               if let img = value as? UIImage {
+                   image = img
+               }
+               else if let imageName = value as? String {
+                   image = UIImage(named: imageName)
+               }
+               images.append(image)
+               // 暂时不添加网络图片功能
+            }
             callback(indexs, images)
         }
     }
@@ -86,7 +108,7 @@ public class SFImagePickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [UIImage?]) -> Void)) -> SFBasePickerView{
+    public final class func showImagePickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [UIImage?]) -> Void)) -> SFBasePickerView{
         let pickerView = SFImagePickerView(frame: CGRect.zero)
         pickerView.showImagePickerWithTitle(title, appearance: appearance, dataSource: dataSource, defaultIndexs: defaultIndexs, config: config, callback: callback)
         return pickerView
@@ -99,8 +121,8 @@ public class SFImagePickerView: SFBasePickerView {
     ///   - defaultIndex: 默认选中项
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [UIImage?]) -> Void)) {
-        self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .linkge(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
+    public final func showImagePickerWithTitle(_ title: String?, appearance: SFPickerImageViewAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [UIImage?]) -> Void)) {
+        self.showPickerWithTitle(title, style: .imageView(appearance: appearance), dataType: .linkge(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
             let models = values as! [SFPickerModel?]
             var images = [UIImage?]()
             for model in models {

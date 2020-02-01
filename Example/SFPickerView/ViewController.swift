@@ -95,9 +95,18 @@ extension ViewController: UITableViewDelegate {
         if indexPath.section == 0 {
             stringPickerAction(tag: indexPath.row)
         }
+        else if indexPath.section == 1 {
+            imagePickerAction(tag: indexPath.row)
+        }
+        else if indexPath.section == 2 {
+            addressPickerAction(tag: indexPath.row)
+        }
+        else if indexPath.section == 3 {
+            datePickerAction(tag: indexPath.row)
+        }
     }
     
-    
+    /// String
     func stringPickerAction(tag: Int) {
         if tag == 0 {
             let data = ["男", "女", "保密"]
@@ -141,6 +150,78 @@ extension ViewController: UITableViewDelegate {
                 print("models：\(models)")
                 print("values：\(values)")
             }
+        }
+    }
+    
+    /// Image
+    func imagePickerAction(tag: Int) {
+        if tag == 0 {
+            let data = ["avatar-0", "avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"]
+            SFImagePickerView.showImagePickerWithTitle("单列(类方法)", appearance: nil, dataSource: data, defaultIndex: 1, config: nil) { (index, value) in
+                print("index：\(index)")
+                print("value：\(value)")
+            }
+        }
+        else if tag == 1 {
+            let data = [["avatar-0", "avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5"],["download-0", "download-1", "download-2", "download-3", "download-4", "download-5"]]
+            SFImagePickerView.showImagePickerWithTitle("多列(类方法)", appearance: nil, dataSource: data, defaultIndexs: nil, config: nil) { (indexs, values) in
+                print("indexs：\(indexs)")
+                print("values：\(values)")
+            }
+        }
+        else if tag == 2 {
+            let model00 = SFPickerModel()
+            model00.value = "avatar-0"
+            let model10 = SFPickerModel()
+            model10.value = "avatar-1"
+            
+            let model01 = SFPickerModel()
+            model01.value = "download-0"
+            let model02 = SFPickerModel()
+            model02.value = "download-1"
+            model00.nextList = [model01, model02]
+            
+            let model11 = SFPickerModel()
+            model11.value = "download-0"
+            let model12 = SFPickerModel()
+            model12.value = "download-1"
+            let model13 = SFPickerModel()
+            model13.value = "download-2"
+            let model14 = SFPickerModel()
+            model14.value = "download-3"
+            let model15 = SFPickerModel()
+            model15.value = "download-4"
+            let model16 = SFPickerModel()
+            model16.value = "download-5"
+            model10.nextList = [model11, model12, model13, model14, model15, model16]
+            
+            let data = [model00, model10]
+            SFImagePickerView.showImagePickerWithTitle("联动(类方法)", appearance: nil, dataSource: data, defaultIndexs: nil, config: nil) { (indexs, models, values) in
+                print("indexs：\(indexs)")
+                print("models：\(models)")
+                print("values：\(values)")
+            }
+        }
+    }
+    
+    /// Address
+    func addressPickerAction(tag: Int) {
+        SFAddressPickerView.showAddressPickerWithTitle("地址", appearance: nil, defaultIndexs: nil, config: nil) { (provinceModel, cityModel, areaModel) in
+            print("province：\(String(describing: provinceModel?.name))")
+            print("city：\(String(describing: cityModel?.name))")
+            print("area：\(String(describing: areaModel?.name))")
+        }
+    }
+    
+    /// Date
+    func datePickerAction(tag: Int) {
+        let mode = SFDateMode.YMDhms
+        let minDate = Date.init(timeInterval: -24*3600, since: Date())
+        let maxDate = Date.init(timeInterval: 24*3600, since: Date())
+        let selDate = Date.init(timeInterval: 0, since: Date())
+        SFDatePickerView.showDatePickerWithTitle("时间", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: nil, config: nil) { (date, value) in
+            print("date：\(date)")
+            print("value：\(value)")
         }
     }
 }
