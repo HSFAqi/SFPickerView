@@ -19,7 +19,7 @@ public class SFStringPickerView: SFBasePickerView {
     ///   - appearance: 自定义外观
     ///   - dataSource: 数据源
     ///   - defaultIndex: 默认选中项
-    ///   - isCallbackWhenSelecting: 选择时是否自动回调
+    ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
     public final class func showStringPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerSingleData, defaultIndex: Int?, config: SFConfig?, callback: @escaping ((Int, String?) -> Void)) -> SFBasePickerView{
@@ -102,7 +102,6 @@ public class SFStringPickerView: SFBasePickerView {
     ///   - config: 配置
     ///   - callback: 回调
     public final func showStringPickerWithTitle(_ title: String?, appearance: SFPickerLabelAppearance?, dataSource: SFPickerLinkgeData, defaultIndexs: [Int]?, config: SFConfig?, callback: @escaping (([Int], [SFPickerModel?], [String?]) -> Void)) {
-        
         self.showPickerWithTitle(title, style: .label(appearance: appearance), dataType: .linkge(data: dataSource), defaultIndexs: defaultIndexs, config: config) { (indexs, values) in
             let models = values as! [SFPickerModel?]
             var values = [String?]()
