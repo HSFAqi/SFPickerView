@@ -50,13 +50,20 @@ class ViewController: UIViewController {
         var subArr3 = [String]()
         subArr3.append("时间")
         
+        /**
+         * SFContactsTableView
+         */
+        var subArr4 = [String]()
+        subArr4.append("联系人")
+        
         arr.append(subArr0)
         arr.append(subArr1)
         arr.append(subArr2)
         arr.append(subArr3)
+        arr.append(subArr4)
         return arr
     }()
-    let titleDataSourcce = ["SFStringPickerView", "SFImagePickerView", "SFAddressPickerView", "SFDatePickerView"]
+    let titleDataSourcce = ["SFStringPickerView", "SFImagePickerView", "SFAddressPickerView", "SFDatePickerView", "SFContactsTableView"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,6 +110,9 @@ extension ViewController: UITableViewDelegate {
         }
         else if indexPath.section == 3 {
             datePickerAction(tag: indexPath.row)
+        }
+        else if indexPath.section == 4 {
+            contactTableAction(tag: indexPath.row)
         }
     }
     
@@ -222,6 +232,23 @@ extension ViewController: UITableViewDelegate {
         SFDatePickerView.showDatePickerWithTitle("时间", appearance: nil, mode: mode, minDate: minDate, maxDate: maxDate, selDate: selDate, format: nil, config: nil) { (date, value) in
             print("date：\(date)")
             print("value：\(value)")
+        }
+    }
+    
+    /// Contact
+    func contactTableAction(tag: Int) {
+        var model0 = SFContactsModel()
+        model0.name = "周杰伦"
+        model0.phone = "1"
+        var model1 = SFContactsModel()
+        model1.name = "毛不易"
+        model1.phone = "2"
+        var model2 = SFContactsModel()
+        model2.name = "林俊杰"
+        model2.phone = "1"
+        let dataSource = [model0, model1, model2]
+        SFContactsTableView.showContactsTableWithTitle("联系人", dataSource: dataSource, config: nil) { (selData) in
+            print(selData)
         }
     }
 }

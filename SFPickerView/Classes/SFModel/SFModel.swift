@@ -10,6 +10,7 @@ import Foundation
 
 
 // MARK: - Model
+/// 省
 public class SFProvinceModel: SFPickerModel {
     public var code: String?
     public var name: String?
@@ -32,6 +33,8 @@ public class SFProvinceModel: SFPickerModel {
         }
     }
 }
+
+/// 市
 public class SFCityModel: SFPickerModel {
     public var code: String?
     public var name: String?
@@ -54,6 +57,8 @@ public class SFCityModel: SFPickerModel {
         }
     }
 }
+
+/// 区
 public class SFAreaModel: SFPickerModel {
     public var code: String?
     public var name: String?
@@ -67,6 +72,13 @@ public class SFAreaModel: SFPickerModel {
         }
     }
     //public override var nextList: [Any]? // 没有就没必要重写了
+}
+
+/// 联系人
+public struct SFContactsModel {
+    public var name: String?
+    public var phone: String?
+    public init() { }
 }
 
 
