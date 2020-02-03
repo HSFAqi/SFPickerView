@@ -77,7 +77,7 @@ public class SFAreaModel: SFPickerModel {
 /// 联系人
 public struct SFContactsModel {
     public var name: String?
-    public var phone: String?
+    public var tel: String?
     public init() { }
 }
 

@@ -22,7 +22,6 @@ class SFContactsCell: UITableViewCell {
         label.font = UIFont.systemFont(ofSize: 15)
         label.textAlignment = .left
         label.textColor = UIColor.red
-        label.text = "许巍"
         return label
     }()
     
@@ -30,7 +29,7 @@ class SFContactsCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(nameLabel)
-        nameLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 50)
+        nameLabel.frame = CGRect(x: 10, y: 0, width: frame.width-20, height: frame.size.height)
     }
     
     required init?(coder: NSCoder) {

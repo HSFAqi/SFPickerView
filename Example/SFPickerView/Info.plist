@@ -35,5 +35,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 	</array>
+	<key>NSContactsUsageDescription</key>
+	<string>选择联系人时需要使用通讯录</string>
 </dict>
 </plist>
