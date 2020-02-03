@@ -9,6 +9,7 @@
 import UIKit
 
 public struct SFAlertViewAppearance {
+    public var isCornerTop: Bool = true
     public var topViewBackgroundColor: UIColor = UIColor.white
     public var lineViewBackgroundColor: UIColor = UIColor(red: 230.00/255.00, green: 230.00/255.00, blue: 230.00/255.00, alpha: 1)
     public var contentViewBackgroundColor: UIColor = UIColor.white
@@ -26,6 +27,11 @@ public struct SFAlertViewAppearance {
     public var customCancleBtn: UIButton?
     public var customSureBtn: UIButton?
     public init() { }
+}
+
+public enum SFAlertStyle {
+    case sheet
+    case alert
 }
 
 public class SFAlertView: UIView {
@@ -116,6 +122,16 @@ public class SFAlertView: UIView {
         lineView.frame = CGRect(x: 0, y: topView.frame.maxY, width: self.frame.size.width, height: 1)
     }
     private func customAppearanceSubviews() {
+        if appearance.isCornerTop {
+            let maskPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii:CGSize(width:10, height:10))
+            let masklayer = CAShapeLayer()
+            masklayer.frame = topView.bounds
+            masklayer.path = maskPath.cgPath
+            self.layer.mask = masklayer
+        }else{
+            self.layer.mask = nil
+        }
+        
         topView.backgroundColor = appearance.topViewBackgroundColor
         lineView.backgroundColor = appearance.lineViewBackgroundColor
         contentView.backgroundColor = appearance.contentViewBackgroundColor

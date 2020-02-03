@@ -72,11 +72,10 @@ public struct SFPickerImageViewAppearance {
     public var customImageView: UIImageView?
 }
 
-
 public class SFBasePickerView: SFBaseView {
     
-    // MARK: - Property(public)
-    public lazy var pickerView: UIPickerView = {
+    // MARK: - Property(internal)
+    lazy var pickerView: UIPickerView = {
         let view = UIPickerView()
         view.delegate = self
         view.dataSource = self

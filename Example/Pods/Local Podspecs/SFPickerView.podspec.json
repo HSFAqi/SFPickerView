@@ -1,6 +1,6 @@
 {
   "name": "SFPickerView",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "summary": "选择器，支持字符串，地址，时间选择",
   "description": "使用方便，一行代码即可；\nTODO: 完善时间选择器，准备添加手机通讯录手机号选择",
   "homepage": "https://github.com/HSFAqi/SFPickerView",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/HSFAqi/SFPickerView.git",
-    "tag": "0.1.1"
+    "tag": "0.1.2"
   },
   "platforms": {
     "ios": "8.0"
