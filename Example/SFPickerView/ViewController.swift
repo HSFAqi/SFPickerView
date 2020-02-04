@@ -237,17 +237,7 @@ extension ViewController: UITableViewDelegate {
     
     /// Contact
     func contactTableAction(tag: Int) {
-        var model0 = SFContactsModel()
-        model0.name = "周杰伦"
-        model0.phone = "1"
-        var model1 = SFContactsModel()
-        model1.name = "毛不易"
-        model1.phone = "2"
-        var model2 = SFContactsModel()
-        model2.name = "林俊杰"
-        model2.phone = "1"
-        let dataSource = [model0, model1, model2]
-        SFContactsTableView.showContactsTableWithTitle("联系人", dataSource: dataSource, config: nil) { (selData) in
+        SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (selData) in
             print(selData)
         }
     }

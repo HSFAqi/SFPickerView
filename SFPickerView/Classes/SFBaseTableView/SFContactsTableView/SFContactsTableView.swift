@@ -11,7 +11,7 @@ import Contacts
 
 public class SFContactsTableView: SFBaseTableView {
     
-    private(set) var contactsModelArray = [SFContactsModel]()
+    private var isGranted: Bool = false
     // MARK: - ConfigUI
     override func configUI() {
         super.configUI()
@@ -22,23 +22,27 @@ public class SFContactsTableView: SFBaseTableView {
                 let store = CNContactStore()
                 store.requestAccess(for: .contacts) { [weak self] (granted, error) in
                     if let _ = error {
-                        self?.showAuthError()
+                        self?.isGranted = false
+                        self?.showGrantAlert()
                     }else{
-                        self?.getContactsDataSource()
+                        self?.isGranted = true
                     }
                 }
                 break
             case .restricted:
-                showAuthError()
+                self.isGranted = false
+                showGrantAlert()
                 break
             case .denied:
-                showAuthError()
+                self.isGranted = false
+                showGrantAlert()
                 break
             case .authorized:
-                getContactsDataSource()
+                self.isGranted = true
                 break
             @unknown default:
                 print("系统预留值")
+                showGrantAlert()
                 break
             }
         } else {
@@ -47,7 +51,7 @@ public class SFContactsTableView: SFBaseTableView {
     }
     
     /// 授权提示
-    private func showAuthError() {
+    private func showGrantAlert() {
         let alertVC = UIAlertController(title: "请授权通讯录权限", message: "请在iPhone的\"设置-隐私-通讯录\"选项中,允许花解解访问你的通讯录", preferredStyle: .alert)
         let ok = UIAlertAction(title: "好的", style: .default, handler: nil)
         alertVC.addAction(ok)
@@ -55,7 +59,8 @@ public class SFContactsTableView: SFBaseTableView {
     }
     
     /// 获取通讯录数据
-    private func getContactsDataSource() {
+    private func getContactsDataSource(success: @escaping ([SFContactsModel]) -> Void) {
+        var contactsModelArray = [SFContactsModel]()
         if #available(iOS 9.0, *) {
             let keysToFetch = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey]
             let fetchRequest = CNContactFetchRequest.init(keysToFetch: keysToFetch as [CNKeyDescriptor])
@@ -70,21 +75,23 @@ public class SFContactsTableView: SFBaseTableView {
                     for phoneNumber in phoneNumbers {
                         model.tel = phoneNumber.value.stringValue
                     }
-                    self.contactsModelArray.append(model)
                     //去掉联系人姓名为空或者 电话为空的数据
                     if(model.name == "" || model.tel == ""){
-                        self.contactsModelArray.remove(at: self.contactsModelArray.count-1)
+                        
+                    }else{
+                        contactsModelArray.append(model)
                     }
                     //在主线程中刷新数据
                     DispatchQueue.main.async(execute: {
-                        self.tableView.reloadData()
+                        success(contactsModelArray)
                     })
                 })
             } catch {
+                success(contactsModelArray)
                 print("读取通讯录出错")
             }
         } else {
-            // Fallback on earlier versions
+            success(contactsModelArray)
         }
     }
 
@@ -95,9 +102,9 @@ public class SFContactsTableView: SFBaseTableView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showContactsTableWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, callback: @escaping ((Any?) -> Void)) -> SFBaseTableView{
+    public final class func showContactsTableWithTitle(_ title: String?, config: SFConfig?, callback: @escaping ((Any?) -> Void)) -> SFBaseTableView{
         let tableView = SFContactsTableView(frame: CGRect.zero)
-        tableView.showContactsTableWithTitle(title, dataSource: dataSource, config: config, callback: callback)
+        tableView.showContactsTableWithTitle(title, config: config, callback: callback)
         return tableView
     }
     
@@ -108,12 +115,18 @@ public class SFContactsTableView: SFBaseTableView {
     ///   - dataSource: 数据源
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showContactsTableWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, callback: @escaping ((Any?) -> Void)) {
-        self.showTableWithTitle(title, dataSource: dataSource, config: config, cellType: SFContactsCell.self, configCell: { (cell, data) in
-            if let c = cell as? SFContactsCell, let d = data as? SFContactsModel {
-                c.name = d.name
+    public final func showContactsTableWithTitle(_ title: String?, config: SFConfig?, callback: @escaping ((Any?) -> Void)) {
+        if isGranted {
+            getContactsDataSource { [weak self] (dataSource) in
+                self?.showTableWithTitle(title, dataSource: dataSource, config: config, cellType: SFContactsCell.self, configCell: { (cell, data) in
+                    if let c = cell as? SFContactsCell, let d = data as? SFContactsModel {
+                        c.name = d.name
+                    }
+                }, callback: callback)
             }
-        }, callback: callback)
+        }else{
+            self.removeFromSuperview()
+        }
     }
 }
 
