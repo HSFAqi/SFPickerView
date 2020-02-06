@@ -11,6 +11,7 @@ import Contacts
 
 public class SFContactsTableView: SFBaseTableView {
     
+    // MARK: - Property(private)
     private var isGranted: Bool = false
     private var sectionTitles = [String]()
     // MARK: - ConfigUI
@@ -50,6 +51,10 @@ public class SFContactsTableView: SFBaseTableView {
         } else {
             
         }
+        // 搜索框
+        let searchView = SFSearchView(frame: CGRect(x: 0, y: 0, width: 200, height: 60))
+        searchView.backgroundColor = UIColor.white
+        headerView = searchView
     }
     
     /// 授权提示

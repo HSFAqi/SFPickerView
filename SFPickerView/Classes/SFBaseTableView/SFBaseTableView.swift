@@ -12,6 +12,7 @@ public class SFBaseTableView: SFBaseView {
 
     // MARK: - Property(internal)
     var tableView: UITableView!
+    var headerView: UIView?
     // MARK: - Property(private)
     private(set) var cellType: UITableViewCell.Type? {
         willSet{
@@ -57,10 +58,7 @@ public class SFBaseTableView: SFBaseView {
     /// 【Base】对象方法
     public final func showTableWithTitle(_ title: String?, style: UITableView.Style, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
         self.title = title
-        self.tableView = UITableView.init(frame: CGRect.zero, style: style)
-        self.tableView.dataSource = self
-        self.tableView.delegate = self
-        self.alertView.contentView = tableView
+        configTableViewWithStyle(style)
         self.dataSource = dataSource
         if let c = config {
             self.config = c
@@ -79,6 +77,18 @@ public class SFBaseTableView: SFBaseView {
                 callback(ws.selData)
             }
             ws.dismiss()
+        }
+    }
+    
+    /// 配置tableView
+    func configTableViewWithStyle(_ style: UITableView.Style) {
+        tableView = UITableView.init(frame: CGRect.zero, style: style)
+        tableView.dataSource = self
+        tableView.delegate = self
+        alertView.contentView = tableView
+        if let header = headerView {
+            header.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: header.frame.size.height)
+            tableView.tableHeaderView = header
         }
     }
 }
@@ -107,7 +117,6 @@ extension SFBaseTableView: UITableViewDataSource {
 
 extension SFBaseTableView: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
         selData = usefulDataSource[indexPath.section][indexPath.row]
     }
 }

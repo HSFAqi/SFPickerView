@@ -28,6 +28,7 @@ class SFContactsCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         contentView.addSubview(nameLabel)
         nameLabel.frame = CGRect(x: 10, y: 0, width: frame.width-20, height: frame.size.height)
     }
@@ -42,8 +43,11 @@ class SFContactsCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        if selected {
+            self.accessoryType = .checkmark
+        }else{
+            self.accessoryType = .none
+        }
     }
     
 }
