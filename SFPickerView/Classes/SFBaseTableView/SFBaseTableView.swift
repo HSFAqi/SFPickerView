@@ -11,12 +11,8 @@ import UIKit
 public class SFBaseTableView: SFBaseView {
 
     // MARK: - Property(internal)
-    lazy var tableView: UITableView = {
-        let view = UITableView.init(frame: CGRect.zero, style: UITableView.Style.plain)
-        view.dataSource = self
-        view.delegate = self
-        return view
-    }()
+    var tableView: UITableView!
+    // MARK: - Property(private)
     private(set) var cellType: UITableViewCell.Type? {
         willSet{
             if let type = newValue {
@@ -41,11 +37,7 @@ public class SFBaseTableView: SFBaseView {
     private var configCellBlock: ((UITableViewCell, Any?) -> Void)?
     // 点击确定回调
     private var callbackBlock: ((Any?) -> Void)?
-    // MARK: - ConfigUI
-    override func configUI() {
-        super.configUI()
-        alertView.contentView = tableView
-    }
+    
     public override var config: SFConfig {
         willSet{
             if newValue.rowHeight != config.rowHeight {
@@ -57,14 +49,18 @@ public class SFBaseTableView: SFBaseView {
     
     /// 【Base】类方法
     @discardableResult
-    public final class func showTableWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseTableView{
+    public final class func showTableWithTitle(_ title: String?, style: UITableView.Style, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseTableView{
         let tableView = SFBaseTableView(frame: CGRect.zero)
-        tableView.showTableWithTitle(title, dataSource: dataSource, config: config, cellType: cellType, configCell: configCell, callback: callback)
+        tableView.showTableWithTitle(title, style: style, dataSource: dataSource, config: config, cellType: cellType, configCell: configCell, callback: callback)
         return tableView
     }
     /// 【Base】对象方法
-    public final func showTableWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
+    public final func showTableWithTitle(_ title: String?, style: UITableView.Style, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
         self.title = title
+        self.tableView = UITableView.init(frame: CGRect.zero, style: style)
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.alertView.contentView = tableView
         self.dataSource = dataSource
         if let c = config {
             self.config = c

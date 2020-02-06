@@ -16,15 +16,15 @@ class SFContactsCell: UITableViewCell {
             nameLabel.text = newValue
         }
     }
+    
     // MARK: - Property(private)
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 17)
         label.textAlignment = .left
-        label.textColor = UIColor.red
+        label.textColor = UIColor.black
         return label
     }()
-    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

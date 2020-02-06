@@ -12,9 +12,11 @@ import Contacts
 public class SFContactsTableView: SFBaseTableView {
     
     private var isGranted: Bool = false
+    private var sectionTitles = [String]()
     // MARK: - ConfigUI
     override func configUI() {
         super.configUI()
+        self.config.alertViewHeight = 0.9 * UIScreen.main.bounds.height
         if #available(iOS 9.0, *) {
             let status = CNContactStore.authorizationStatus(for: .contacts)
             switch status {
@@ -67,7 +69,7 @@ public class SFContactsTableView: SFBaseTableView {
             let contactStore = CNContactStore()
             do {
                 try contactStore.enumerateContacts(with: fetchRequest, usingBlock: { (contact: CNContact, stop: UnsafeMutablePointer<ObjCBool>) in
-                    var model = SFContactsModel()
+                    let model = SFContactsModel()
                     let lastName = contact.familyName
                     let firstName = contact.givenName
                     model.name = "\(lastName)\(firstName)"
@@ -81,10 +83,10 @@ public class SFContactsTableView: SFBaseTableView {
                     }else{
                         contactsModelArray.append(model)
                     }
-                    //在主线程中刷新数据
-                    DispatchQueue.main.async(execute: {
-                        success(contactsModelArray)
-                    })
+                })
+                //在主线程中刷新数据
+                DispatchQueue.main.async(execute: {
+                    success(contactsModelArray)
                 })
             } catch {
                 success(contactsModelArray)
@@ -93,6 +95,32 @@ public class SFContactsTableView: SFBaseTableView {
         } else {
             success(contactsModelArray)
         }
+    }
+    
+    /// 给通讯录数据排序
+    func sortContactsDataSource(_ contacts: [SFContactsModel]) -> [[SFContactsModel]] {
+        let collation = UILocalizedIndexedCollation.current()
+        let highSection = collation.sectionTitles.count
+        var sectionsArr: [[SFContactsModel]] = Array.init(repeating: [], count: highSection)
+        let selector = #selector(getter: SFContactsModel.collationString)
+        for model in contacts {
+            let sectionIndex = collation.section(for: model, collationStringSelector: selector)
+            var modelArr = sectionsArr[sectionIndex]
+            modelArr.append(model)
+            sectionsArr[sectionIndex] = modelArr
+        }
+        self.sectionTitles = collation.sectionTitles
+        var sortedSectionsArr = [[SFContactsModel]]()
+        for (idx, modelArr) in sectionsArr.enumerated() {
+            guard modelArr.count > 0 else {
+                let sectionTitle = collation.sectionTitles[idx]
+                self.sectionTitles = self.sectionTitles.filter({$0 != sectionTitle})
+                continue
+            }
+            let sortedModelArr = collation.sortedArray(from: modelArr, collationStringSelector: selector)
+            sortedSectionsArr.append(sortedModelArr as! [SFContactsModel])
+        }
+        return sortedSectionsArr
     }
 
     /// 【Contacts】类方法
@@ -118,7 +146,11 @@ public class SFContactsTableView: SFBaseTableView {
     public final func showContactsTableWithTitle(_ title: String?, config: SFConfig?, callback: @escaping ((Any?) -> Void)) {
         if isGranted {
             getContactsDataSource { [weak self] (dataSource) in
-                self?.showTableWithTitle(title, dataSource: dataSource, config: config, cellType: SFContactsCell.self, configCell: { (cell, data) in
+                guard let ws = self else {
+                    return
+                }
+                let sortedDataSource = ws.sortContactsDataSource(dataSource)
+                ws.showTableWithTitle(title, style: .grouped, dataSource: sortedDataSource, config: config, cellType: SFContactsCell.self, configCell: { (cell, data) in
                     if let c = cell as? SFContactsCell, let d = data as? SFContactsModel {
                         c.name = d.name
                     }
@@ -127,6 +159,18 @@ public class SFContactsTableView: SFBaseTableView {
         }else{
             self.removeFromSuperview()
         }
+    }
+}
+
+extension SFContactsTableView {
+    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return self.sectionTitles[section]
+    }
+    public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return self.sectionTitles
+    }
+    public func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        return self.sectionTitles.firstIndex(of: title)!
     }
 }
 

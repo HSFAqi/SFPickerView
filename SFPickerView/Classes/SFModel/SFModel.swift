@@ -75,10 +75,27 @@ public class SFAreaModel: SFPickerModel {
 }
 
 /// 联系人
-public struct SFContactsModel {
+public class SFContactsModel {
     public var name: String?
     public var tel: String?
     public init() { }
+}
+@objc protocol CollationIndexable {
+    @objc var collationString : String { get }
+}
+extension SFContactsModel : CollationIndexable {
+    @objc var collationString : String {
+        guard let n = name, n.isEmpty == false else {
+            return ""
+        }
+        var result = ""
+        if n.isIncludeChinese() {
+            result = n.transformToPinyin(hasBlank: false)
+        }else{
+            result = n
+        }
+        return result
+    }
 }
 
 
