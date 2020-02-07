@@ -87,10 +87,7 @@ public class SFContactsTableView: SFBaseTableView {
     
     /// 授权提示
     private func showGrantAlert() {
-        let alertVC = UIAlertController(title: "请授权通讯录权限", message: "请在iPhone的\"设置-隐私-通讯录\"选项中,允许花解解访问你的通讯录", preferredStyle: .alert)
-        let ok = UIAlertAction(title: "好的", style: .default, handler: nil)
-        alertVC.addAction(ok)
-        UIViewController.topVC?.present(alertVC, animated: true, completion: nil)
+        SFAlertView.showAlert(title: "访问失败", message: "请授权通讯录权限", sureTitle: "好的", handler: nil)
     }
     
     /// 获取通讯录数据

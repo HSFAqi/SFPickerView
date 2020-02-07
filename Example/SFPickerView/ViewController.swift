@@ -56,14 +56,21 @@ class ViewController: UIViewController {
         var subArr4 = [String]()
         subArr4.append("联系人")
         
+        /**
+         * SFBaseMapView
+         */
+        var subArr5 = [String]()
+        subArr5.append("地图选点")
+        
         arr.append(subArr0)
         arr.append(subArr1)
         arr.append(subArr2)
         arr.append(subArr3)
         arr.append(subArr4)
+        arr.append(subArr5)
         return arr
     }()
-    let titleDataSourcce = ["SFStringPickerView", "SFImagePickerView", "SFAddressPickerView", "SFDatePickerView", "SFContactsTableView"]
+    let titleDataSourcce = ["SFStringPickerView", "SFImagePickerView", "SFAddressPickerView", "SFDatePickerView", "SFContactsTableView", "SFBaseMapView"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,6 +122,9 @@ extension ViewController: UITableViewDelegate {
         }
         else if indexPath.section == 4 {
             contactTableAction(tag: indexPath.row)
+        }
+        else if indexPath.section == 5 {
+            mapAction(tag: indexPath.row)
         }
     }
     
@@ -241,6 +251,13 @@ extension ViewController: UITableViewDelegate {
     func contactTableAction(tag: Int) {
         SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (model) in
             print(model?.name)
+        }
+    }
+    
+    /// Map
+    func mapAction(tag: Int) {
+        SFBaseMapView.showMapWithTitle("地图选点", dataSource: nil, config: nil) { (value) in
+            
         }
     }
 }

@@ -183,4 +183,11 @@ public class SFAlertView: UIView {
         block()
     }
 
+    /// 提示
+    public final class func showAlert(title: String?, message: String?, sureTitle: String, handler: ((UIAlertAction) -> Void)?) {
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let ok = UIAlertAction(title: sureTitle, style: .default, handler: handler)
+        alertVC.addAction(ok)
+        UIViewController.topVC?.present(alertVC, animated: true, completion: nil)
+    }
 }

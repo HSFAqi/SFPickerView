@@ -37,5 +37,7 @@
 	</array>
 	<key>NSContactsUsageDescription</key>
 	<string>选择联系人时需要使用通讯录</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>定位用户当前位置时需要使用定位功能</string>
 </dict>
 </plist>
