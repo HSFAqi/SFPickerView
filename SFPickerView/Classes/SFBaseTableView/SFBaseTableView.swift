@@ -81,7 +81,7 @@ public class SFBaseTableView: SFBaseView {
     }
     
     /// 配置tableView
-    func configTableViewWithStyle(_ style: UITableView.Style) {
+    private func configTableViewWithStyle(_ style: UITableView.Style) {
         tableView = UITableView.init(frame: CGRect.zero, style: style)
         tableView.dataSource = self
         tableView.delegate = self
@@ -90,6 +90,12 @@ public class SFBaseTableView: SFBaseView {
             header.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: header.frame.size.height)
             tableView.tableHeaderView = header
         }
+    }
+    
+    /// 刷新
+    func updateWithDataSource(_ dataSource: [Any?]) {
+        self.dataSource = dataSource
+        tableView.reloadData()
     }
 }
 

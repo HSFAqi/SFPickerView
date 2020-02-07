@@ -11,9 +11,12 @@ import UIKit
 public class SFSearchView: UIView {
 
     // MARK: - Property(internal)
-    var isEditing: Bool = false
+    var didBeginSearch: (() -> Void)?
+    var didSearching: ((String) -> Void)?
+    var didEndSearch: (() -> Void)?
     
     // MARK: - Property(private)
+    private(set) var isEditing: Bool = false
     private lazy var searchTextField: UITextField = {
         let textfield = UITextField()
         textfield.delegate = self
@@ -88,19 +91,27 @@ public class SFSearchView: UIView {
     }
     
     @objc func cancelBtnAction() {
+        self.searchTextField.text = nil
         self.searchTextField.resignFirstResponder()
+        changeEditingStatus(false)
+        if let block = didEndSearch {
+            block()
+        }
     }
 }
 
 extension SFSearchView: UITextFieldDelegate {
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         changeEditingStatus(true)
-    }
-    public func textFieldDidEndEditing(_ textField: UITextField) {
-        changeEditingStatus(false)
+        if let block = didBeginSearch {
+            block()
+        }
     }
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        if let block = didSearching {
+            block(textField.text ?? "")
+        }
         return true
     }
 }

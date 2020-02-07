@@ -239,8 +239,8 @@ extension ViewController: UITableViewDelegate {
     
     /// Contact
     func contactTableAction(tag: Int) {
-        SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (selData) in
-            print(selData)
+        SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (model) in
+            print(model?.name)
         }
     }
 }
