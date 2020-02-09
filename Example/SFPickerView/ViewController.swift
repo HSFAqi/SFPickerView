@@ -62,21 +62,27 @@ class ViewController: UIViewController {
         var subArr5 = [String]()
         subArr5.append("地图选点")
         
+        /**
+         * SFPhotosCollectionView
+         */
+        var subArr6 = [String]()
+        subArr6.append("选照片")
+        
         arr.append(subArr0)
         arr.append(subArr1)
         arr.append(subArr2)
         arr.append(subArr3)
         arr.append(subArr4)
         arr.append(subArr5)
+        arr.append(subArr6)
+        
         return arr
     }()
-    let titleDataSourcce = ["SFStringPickerView", "SFImagePickerView", "SFAddressPickerView", "SFDatePickerView", "SFContactsTableView", "SFBaseMapView"]
+    let titleDataSourcce = ["SFStringPickerView", "SFImagePickerView", "SFAddressPickerView", "SFDatePickerView", "SFContactsTableView", "SFBaseMapView", "SFPhotosCollectionView"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(self.tableView)
-        
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -125,6 +131,9 @@ extension ViewController: UITableViewDelegate {
         }
         else if indexPath.section == 5 {
             mapAction(tag: indexPath.row)
+        }
+        else if indexPath.section == 6 {
+            photosAction(tag: indexPath.row)
         }
     }
     
@@ -265,6 +274,13 @@ extension ViewController: UITableViewDelegate {
             print("地址：\(String(describing: address))")
             print("精度：\(String(describing: coordinate?.longitude))")
             print("维度：\(String(describing: coordinate?.latitude))")
+        }
+    }
+    
+    /// Photos
+    func photosAction(tag: Int) {
+        SFPhotosCollectionView.showPhotosCollectionWithTitle("选照片", config: nil) { (model) in
+            
         }
     }
 }

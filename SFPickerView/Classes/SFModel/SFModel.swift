@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import Photos
 
 // MARK: - Model
 /// 省
@@ -96,6 +96,14 @@ extension SFContactsModel : CollationIndexable {
         }
         return result
     }
+}
+
+/// 相册
+public class SFPhotoModel {
+    public var asset: PHAsset?
+    public var selected: Bool = false
+    public var image: UIImage?
+    public var thumbnail: UIImage?
 }
 
 

@@ -8,23 +8,26 @@
 
 import UIKit
 
-private let reuseIdentifier : String = "collectionViewCell"
+private let reuseIdentifier: String = "collectionViewCell"
+private let minimumLineSpacing: CGFloat = 2
+private let minimumInteritemSpacing: CGFloat = 2
 public class SFBaseCollectionView: SFBaseView {
     
     // MARK: - Property(internal)
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 2
-        layout.minimumInteritemSpacing = 2
+        layout.minimumLineSpacing = minimumLineSpacing
+        layout.minimumInteritemSpacing = minimumInteritemSpacing
         let view = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         view.dataSource = self
         view.delegate = self
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         return view
     }()
+    var column: Int = 3
     // MARK: - Property(private)
-    private(set) var cellType: UITableViewCell.Type? {
+    private(set) var cellType: UICollectionViewCell.Type? {
         willSet{
             if let type = newValue {
                 collectionView.register(type, forCellWithReuseIdentifier: String(describing: type))
@@ -43,8 +46,11 @@ public class SFBaseCollectionView: SFBaseView {
     }
     // 内部使用的数据源
     private(set) var usefulDataSource = [[Any?]]()
+    private var selData: Any?
     // 给cell赋值
     private var configCellBlock: ((UICollectionViewCell, Any?) -> Void)?
+    // 点击确定回调
+    private var callbackBlock: ((Any?) -> Void)?
     
     // MARK: - ConfigUI
     override func configUI() {
@@ -55,6 +61,46 @@ public class SFBaseCollectionView: SFBaseView {
         didSet{
             collectionView.reloadData()
         }
+    }
+    
+    /// 【Base】类方法
+    @discardableResult
+    public final class func showCollectionWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, cellType: UICollectionViewCell.Type?, configCell: ((UICollectionViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseCollectionView {
+        let collectionView = SFBaseCollectionView(frame: CGRect.zero)
+        collectionView.showCollectionWithTitle(title, dataSource: dataSource, config: config, cellType: cellType, configCell: configCell, callback: callback)
+        return collectionView
+    }
+    /// 【Base】对象方法
+    public final func showCollectionWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, cellType: UICollectionViewCell.Type?, configCell: ((UICollectionViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
+        self.title = title
+        self.dataSource = dataSource
+        if let c = config {
+            self.config = c
+        }
+        self.cellType = cellType
+        self.configCellBlock = configCell
+        self.callbackBlock = callback
+        isChanged = false
+        self.collectionView.reloadData()
+        show()
+        self.alertView.sureBlock = {
+            [weak self] in
+            guard let ws = self else {
+                return
+            }
+            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
+                if let callback = ws.callbackBlock {
+                    callback(ws.selData)
+                }
+            }
+            ws.dismiss()
+        }
+    }
+    
+    /// 刷新
+    func updateWithDataSource(_ dataSource: [Any?]) {
+        self.dataSource = dataSource
+        collectionView.reloadData()
     }
 }
 extension SFBaseCollectionView: UICollectionViewDataSource {
@@ -77,9 +123,22 @@ extension SFBaseCollectionView: UICollectionViewDataSource {
         }
         return cell
     }
+    
 }
 extension SFBaseCollectionView: UICollectionViewDelegate {
-    
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        isChanged = true
+        selData = usefulDataSource[indexPath.section][indexPath.row]
+        if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
+            callback(selData)
+        }
+    }
+}
+extension SFBaseCollectionView: UICollectionViewDelegateFlowLayout {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let w = (collectionView.frame.size.width - minimumInteritemSpacing*CGFloat(column))/CGFloat(column)
+        return CGSize(width: w, height: w)
+    }
 }
 
 

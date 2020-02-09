@@ -31,11 +31,11 @@ public class SFContactsTableView: SFBaseTableView {
             case .notDetermined:
                 let store = CNContactStore()
                 store.requestAccess(for: .contacts) { [weak self] (granted, error) in
-                    if let _ = error {
+                    if granted {
+                        self?.isGranted = true
+                    }else{
                         self?.isGranted = false
                         self?.showGrantAlert()
-                    }else{
-                        self?.isGranted = true
                     }
                 }
                 break
@@ -87,7 +87,12 @@ public class SFContactsTableView: SFBaseTableView {
     
     /// 授权提示
     private func showGrantAlert() {
-        SFAlertView.showAlert(title: "访问失败", message: "请授权通讯录权限", sureTitle: "好的", handler: nil)
+        SFAlertView.showAlert(title: "访问失败", message: "请授权通讯录权限", sureTitle: "好的") { (action) in
+            let url = URL.init(string: UIApplication.openSettingsURLString)
+            if UIApplication.shared.canOpenURL(url!) {
+                UIApplication.shared.openURL(url!)
+            }
+        }
     }
     
     /// 获取通讯录数据
@@ -163,7 +168,6 @@ public class SFContactsTableView: SFBaseTableView {
     /// 【Contacts】类方法
     /// - Parameters:
     ///   - title: 标题
-    ///   - dataSource: 数据源
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
@@ -176,7 +180,6 @@ public class SFContactsTableView: SFBaseTableView {
     /// 【Contacts】对象方法
     /// - Parameters:
     ///   - title: 标题
-    ///   - dataSource: 数据源
     ///   - config: 配置
     ///   - callback: 回调
     public final func showContactsTableWithTitle(_ title: String?, config: SFConfig?, callback: @escaping ((SFContactsModel?) -> Void)) {

@@ -10,10 +10,11 @@ import UIKit
 
 class SFPhotoCell: UICollectionViewCell {
     
-    // MARK: - Property()
-    private lazy var photoImgView: UIImageView = {
+    // MARK: - Property
+    lazy var photoImgView: UIImageView = {
         let imgView = UIImageView()
         imgView.contentMode = .scaleAspectFill
+        imgView.clipsToBounds = true
         return imgView
     }()
     private lazy var selectImgView: UIImageView = {
@@ -40,4 +41,5 @@ class SFPhotoCell: UICollectionViewCell {
         photoImgView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
         selectImgView.frame = CGRect(x: frame.size.width-40, y: frame.size.height-40, width: 30, height: 30)
     }
+    
 }
