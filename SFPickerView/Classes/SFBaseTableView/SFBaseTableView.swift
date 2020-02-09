@@ -11,8 +11,20 @@ import UIKit
 public class SFBaseTableView: SFBaseView {
 
     // MARK: - Property(internal)
-    var tableView: UITableView!
-    var headerView: UIView?
+    lazy var tableView: UITableView = {
+        let view = UITableView.init(frame: CGRect.zero, style: .plain)
+        view.dataSource = self
+        view.delegate = self
+        return view
+    }()
+    var headerView: UIView? {
+        willSet{
+            if let header = newValue {
+                header.frame = CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: header.frame.size.height)
+                tableView.tableHeaderView = header
+            }
+        }
+    }
     // MARK: - Property(private)
     private(set) var cellType: UITableViewCell.Type? {
         willSet{
@@ -39,26 +51,30 @@ public class SFBaseTableView: SFBaseView {
     // 点击确定回调
     private var callbackBlock: ((Any?) -> Void)?
     
+    // MARK: - ConfigUI
+    override func configUI() {
+        super.configUI()
+        alertView.contentView = tableView
+    }
     public override var config: SFConfig {
-        willSet{
-            if newValue.rowHeight != config.rowHeight {
-                tableView.frame = CGRect.zero
-                alertView.contentView = tableView
-            }
+        didSet{
+            tableView.reloadData()
         }
     }
     
     /// 【Base】类方法
     @discardableResult
-    public final class func showTableWithTitle(_ title: String?, style: UITableView.Style, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseTableView{
+    public final class func showTableWithTitle(_ title: String?, style: UITableView.Style?, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseTableView{
         let tableView = SFBaseTableView(frame: CGRect.zero)
         tableView.showTableWithTitle(title, style: style, dataSource: dataSource, config: config, cellType: cellType, configCell: configCell, callback: callback)
         return tableView
     }
     /// 【Base】对象方法
-    public final func showTableWithTitle(_ title: String?, style: UITableView.Style, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
+    public final func showTableWithTitle(_ title: String?, style: UITableView.Style?, dataSource: [Any?], config: SFConfig?, cellType: UITableViewCell.Type?, configCell: ((UITableViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
         self.title = title
-        configTableViewWithStyle(style)
+        if let s = style {
+            configTableViewWithStyle(s)
+        }
         self.dataSource = dataSource
         if let c = config {
             self.config = c
@@ -66,6 +82,7 @@ public class SFBaseTableView: SFBaseView {
         self.cellType = cellType
         self.configCellBlock = configCell
         self.callbackBlock = callback
+        isChanged = false
         self.tableView.reloadData()
         show()
         self.alertView.sureBlock = {
@@ -73,8 +90,10 @@ public class SFBaseTableView: SFBaseView {
             guard let ws = self else {
                 return
             }
-            if let callback = ws.callbackBlock {
-                callback(ws.selData)
+            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
+                if let callback = ws.callbackBlock {
+                    callback(ws.selData)
+                }
             }
             ws.dismiss()
         }
@@ -122,8 +141,15 @@ extension SFBaseTableView: UITableViewDataSource {
 }
 
 extension SFBaseTableView: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return config.rowHeight
+    }
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        isChanged = true
         selData = usefulDataSource[indexPath.section][indexPath.row]
+        if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
+            callback(selData)
+        }
     }
 }
 

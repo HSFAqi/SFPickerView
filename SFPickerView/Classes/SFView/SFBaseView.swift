@@ -50,6 +50,7 @@ public class SFBaseView: UIView {
             alertView.title = newValue
         }
     }
+    var isChanged: Bool = false // 是否有更改
 
     // MARK: - Property(private)
     private lazy var maskBackgroundView: UIView = {

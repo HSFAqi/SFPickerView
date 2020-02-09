@@ -90,7 +90,6 @@ public class SFBasePickerView: SFBaseView {
     private var callbackBlock: ((Int, SFPickerDataProtocol?) -> Void)? // 单列回调
     private var mulCallbackBlock: (([Int], [SFPickerDataProtocol?]) -> Void)? // 多列回调
     private var isLinkge: Bool = false // 是否联动
-    private var isChanged: Bool = false // 是否更改
     
     // MARK: - ConfigUI
     override func configUI() {

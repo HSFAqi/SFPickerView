@@ -16,7 +16,7 @@ class SFPhotoCell: UICollectionViewCell {
         imgView.contentMode = .scaleAspectFill
         return imgView
     }()
-    private lazy var selImgView: UIImageView = {
+    private lazy var selectImgView: UIImageView = {
         let imgView = UIImageView()
         imgView.contentMode = .scaleAspectFill
         imgView.image = UIImage.bundleImageWithName("sf_select_nor")
@@ -24,4 +24,20 @@ class SFPhotoCell: UICollectionViewCell {
         return imgView
     }()
     
+    // MARK: - Initialize
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configUI()
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - ConfigUI
+    func configUI() {
+        addSubview(photoImgView)
+        addSubview(selectImgView)
+        photoImgView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
+        selectImgView.frame = CGRect(x: frame.size.width-40, y: frame.size.height-40, width: 30, height: 30)
+    }
 }

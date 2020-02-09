@@ -58,14 +58,7 @@ public class SFBaseMapView: SFBaseView {
     private var coordinate: CLLocationCoordinate2D?
     private var address: String?
     
-    public override var config: SFConfig {
-        willSet{
-            if newValue.rowHeight != config.rowHeight {
-                mapView.frame = CGRect.zero
-                alertView.contentView = mapView
-            }
-        }
-    }
+    // MARK: - ConfigUI
     override func configUI() {
         super.configUI()
         self.config.alertViewHeight = 0.9 * UIScreen.main.bounds.height
@@ -104,6 +97,7 @@ public class SFBaseMapView: SFBaseView {
     
     /// 重新定位到当前位置
     @objc private func locationBtnAction() {
+        isChanged = false
         mapView.setCenter(mapView.userLocation.coordinate, animated: false)
         let span = MKCoordinateSpan.init(latitudeDelta: 0.021251, longitudeDelta: 0.016093)
         let region = MKCoordinateRegion.init(center: mapView.userLocation.coordinate, span: span)
@@ -124,14 +118,17 @@ public class SFBaseMapView: SFBaseView {
             self.config = c
         }
         self.callbackBlock = callback
+        isChanged = false
         show()
         self.alertView.sureBlock = {
             [weak self] in
             guard let ws = self else {
                 return
             }
-            if let callback = ws.callbackBlock {
-                callback(self?.coordinate, self?.address)
+            if !ws.isChanged || !ws.config.isCallbackWhenSelecting {
+                if let callback = ws.callbackBlock {
+                    callback(ws.coordinate, ws.address)
+                }
             }
             ws.dismiss()
         }
@@ -170,6 +167,9 @@ extension SFBaseMapView: CLLocationManagerDelegate {
                 self.infoView.location = address
                 self.annotation.title = address
                 self.address = address
+                if let callback = self.callbackBlock, self.config.isCallbackWhenSelecting == true {
+                    callback(self.coordinate, self.address)
+                }
             }
         }
     }
@@ -195,9 +195,13 @@ extension SFBaseMapView: MKMapViewDelegate {
         annotation.coordinate = mapView.centerCoordinate
     }
     public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        let location = CLLocation.init(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
-        getLocationInfos(location: location)
-        mapView.selectAnnotation(annotation, animated: true)
+        isChanged = true
+        let isAdded = mapView.annotations.contains(where: { (anno) -> Bool in self.annotation.isEqual(anno) })
+        if isAdded {
+            let location = CLLocation.init(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
+            getLocationInfos(location: location)
+            mapView.selectAnnotation(annotation, animated: true)
+        }
     }
 }
 

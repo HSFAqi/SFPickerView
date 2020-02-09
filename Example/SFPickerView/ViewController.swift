@@ -249,14 +249,19 @@ extension ViewController: UITableViewDelegate {
     
     /// Contact
     func contactTableAction(tag: Int) {
-        SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (model) in
+        var config = SFConfig.init()
+        config.rowHeight = 100
+        config.isCallbackWhenSelecting = true
+        SFContactsTableView.showContactsTableWithTitle("联系人", config: config) { (model) in
             print(model?.name ?? "")
         }
     }
     
     /// Map
     func mapAction(tag: Int) {
-        SFBaseMapView.showMapWithTitle("地图选点", config: nil) { (coordinate, address) in
+        var config = SFConfig.init()
+        config.isCallbackWhenSelecting = true
+        SFBaseMapView.showMapWithTitle("地图选点", config: config) { (coordinate, address) in
             print("地址：\(String(describing: address))")
             print("精度：\(String(describing: coordinate?.longitude))")
             print("维度：\(String(describing: coordinate?.latitude))")
