@@ -26,9 +26,7 @@ public class SFSearchView: UIView {
         let attributedPlaceholder = NSAttributedString.init(string: "请输入关键字", attributes: [NSAttributedString.Key.foregroundColor : UIColor.darkGray])
         textfield.attributedPlaceholder = attributedPlaceholder
         textfield.leftViewMode = .always
-        let bundle = Bundle.getBundle(forClass: SFBaseView.self as AnyClass, resource: "SFPickerView")
-        let filePath = bundle?.path(forResource: "sf_search", ofType: ".png")
-        let image = UIImage(contentsOfFile: filePath ?? "")
+        let image = UIImage.bundleImageWithName("sf_search")
         let imgView = UIImageView(image: image)
         imgView.contentMode = .scaleAspectFit
         let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 20))

@@ -33,9 +33,7 @@ public class SFBaseMapView: SFBaseView {
     }()
     private lazy var locationBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        let bundle = Bundle.getBundle(forClass: SFBaseView.self as AnyClass, resource: "SFPickerView")
-        let filePath = bundle?.path(forResource: "sf_location", ofType: ".png")
-        let image = UIImage(contentsOfFile: filePath ?? "")
+        let image = UIImage.bundleImageWithName("sf_location")
         btn.setImage(image, for: .normal)
         btn.addTarget(self, action: #selector(locationBtnAction), for: .touchUpInside)
         btn.layer.masksToBounds = true
