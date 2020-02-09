@@ -250,14 +250,16 @@ extension ViewController: UITableViewDelegate {
     /// Contact
     func contactTableAction(tag: Int) {
         SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (model) in
-            print(model?.name)
+            print(model?.name ?? "")
         }
     }
     
     /// Map
     func mapAction(tag: Int) {
-        SFBaseMapView.showMapWithTitle("地图选点", dataSource: nil, config: nil) { (value) in
-            
+        SFBaseMapView.showMapWithTitle("地图选点", config: nil) { (coordinate, address) in
+            print("地址：\(String(describing: address))")
+            print("精度：\(String(describing: coordinate?.longitude))")
+            print("维度：\(String(describing: coordinate?.latitude))")
         }
     }
 }

@@ -17,7 +17,7 @@ public class SFBaseTableView: SFBaseView {
     private(set) var cellType: UITableViewCell.Type? {
         willSet{
             if let type = newValue {
-                tableView.register(newValue, forCellReuseIdentifier: NSStringFromClass(type))
+                tableView.register(newValue, forCellReuseIdentifier: String(describing: type))
             }
         }
     }
@@ -109,7 +109,7 @@ extension SFBaseTableView: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell
         if let type = cellType {
-            cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(type), for: indexPath)
+            cell = tableView.dequeueReusableCell(withIdentifier: String(describing: type), for: indexPath)
         }else{
             cell = tableView.dequeueReusableCell(withIdentifier: "cell") ?? UITableViewCell(style: .default, reuseIdentifier: "cell")
         }
