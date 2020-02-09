@@ -13,8 +13,8 @@ import CoreLocation
 private let annotationId : String = "annotationId"
 public class SFBaseMapView: SFBaseView {
     
-    // MARK: - Property(private)
-    private lazy var mapView: MKMapView = {
+    // MARK: - Property(internal)
+    lazy var mapView: MKMapView = {
         let view = MKMapView(frame: CGRect.zero)
         view.mapType = .standard
         view.userTrackingMode = .follow
@@ -25,6 +25,7 @@ public class SFBaseMapView: SFBaseView {
         view.delegate = self
         return view
     }()
+    // MARK: - Property(private)
     private lazy var infoView: SFLocationInfoView = {
         let view = SFLocationInfoView.createViewFromNib()
         view.backgroundColor = UIColor.white.withAlphaComponent(0.9)
