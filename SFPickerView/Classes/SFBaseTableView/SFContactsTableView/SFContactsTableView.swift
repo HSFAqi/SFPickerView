@@ -96,10 +96,10 @@ public class SFContactsTableView: SFBaseTableView {
     /// 授权提示
     private func showGrantAlert() {
         SFAlertView.showAlert(title: "访问失败", message: "请授权通讯录权限", sureTitle: "好的") { (action) in
-            let url = URL.init(string: UIApplication.openSettingsURLString)
-            if UIApplication.shared.canOpenURL(url!) {
-                UIApplication.shared.openURL(url!)
-            }
+//            let url = URL.init(string: UIApplication.openSettingsURLString)
+//            if UIApplication.shared.canOpenURL(url!) {
+//                UIApplication.shared.openURL(url!)
+//            }
         }
     }
     

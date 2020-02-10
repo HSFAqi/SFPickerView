@@ -75,10 +75,10 @@ public class SFBaseMapView: SFBaseView {
     private func getLocationAuthorization() {
         guard CLLocationManager.locationServicesEnabled() else {
             SFAlertView.showAlert(title: "定位失败", message: "请开启定位服务", sureTitle: "好的") { (action) in
-                let url = URL.init(string: UIApplication.openSettingsURLString)
-                if UIApplication.shared.canOpenURL(url!) {
-                    UIApplication.shared.openURL(url!)
-                }
+//                let url = URL.init(string: UIApplication.openSettingsURLString)
+//                if UIApplication.shared.canOpenURL(url!) {
+//                    UIApplication.shared.openURL(url!)
+//                }
             }
             return
         }
@@ -88,10 +88,10 @@ public class SFBaseMapView: SFBaseView {
     /// 授权提示
     private func showGrantAlert() {
         SFAlertView.showAlert(title: "定位失败", message: "请授权定位权限", sureTitle: "好的") { (action) in
-            let url = URL.init(string: UIApplication.openSettingsURLString)
-            if UIApplication.shared.canOpenURL(url!) {
-                UIApplication.shared.openURL(url!)
-            }
+//            let url = URL.init(string: UIApplication.openSettingsURLString)
+//            if UIApplication.shared.canOpenURL(url!) {
+//                UIApplication.shared.openURL(url!)
+//            }
         }
     }
     
