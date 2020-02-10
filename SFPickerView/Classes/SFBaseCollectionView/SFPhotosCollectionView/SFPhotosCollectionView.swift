@@ -63,15 +63,20 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
     
     // MARK: - 获取相册数据
     func getAllPhotoModelsFromSysytem() {
-        var models = [SFPhotoModel]()
-        let options = PHFetchOptions.init()
-        let assetsFetchResults: PHFetchResult = PHAsset.fetchAssets(with: options)
-        assetsFetchResults.enumerateObjects { (asset, index, stop) in
-            let model = SFPhotoModel()
-            model.asset = asset
-            models.append(model)
+        DispatchQueue.global().async {
+            var models = [SFPhotoModel]()
+            let options = PHFetchOptions.init()
+            let assetsFetchResults: PHFetchResult = PHAsset.fetchAssets(with: options)
+            assetsFetchResults.enumerateObjects { (asset, index, stop) in
+                let model = SFPhotoModel()
+                model.asset = asset
+                models.append(model)
+            }
+            self.photoModels = models
+            DispatchQueue.main.async {
+                self.updateWithDataSource(self.photoModels)
+            }
         }
-        photoModels = models
     }
     
 
@@ -95,7 +100,6 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
     ///   - callback: 回调
     public final func showPhotosCollectionWithTitle(_ title: String?, config: SFConfig?, callback: @escaping ((SFPhotoModel?) -> Void)) {
         if isGranted {
-            getAllPhotoModelsFromSysytem()
             showCollectionWithTitle(title, dataSource: photoModels, config: config, cellType: SFPhotoCell.self, configCell: { (cell, data) in
                 if let c = cell as? SFPhotoCell, let model = data as? SFPhotoModel {
                     if let thumbnail = model.thumbnail {
@@ -116,6 +120,7 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
                     callback(model)
                 }
             }
+            getAllPhotoModelsFromSysytem()
         }else{
             self.removeFromSuperview()
         }

@@ -75,12 +75,16 @@ public class SFContactsTableView: SFBaseTableView {
             self.updateWithDataSource(self.sortedContactsModels)
         }
         searchView.didSearching = { (searchText) in
-            let predicate = NSPredicate.init(format: "SELF CONTAINS[cd] %@", searchText)
-            self.filtedContactsModels = self.contactsModels.filter { (model) -> Bool in
-                return predicate.evaluate(with: model.name)
+            DispatchQueue.global().async {
+                let predicate = NSPredicate.init(format: "SELF CONTAINS[cd] %@", searchText)
+                self.filtedContactsModels = self.contactsModels.filter { (model) -> Bool in
+                    return predicate.evaluate(with: model.name)
+                }
+                self.sortContactsDataSource()
+                DispatchQueue.main.async {
+                    self.updateWithDataSource(self.sortedFiltedContactsModels)
+                }
             }
-            self.sortContactsDataSource()
-            self.updateWithDataSource(self.sortedFiltedContactsModels)
         }
         headerView = searchView
     }
@@ -185,8 +189,6 @@ public class SFContactsTableView: SFBaseTableView {
     public final func showContactsTableWithTitle(_ title: String?, config: SFConfig?, callback: @escaping ((SFContactsModel?) -> Void)) {
         if isGranted {
             isFilted = false
-            getContactsDataSource()
-            sortContactsDataSource()
             showTableWithTitle(title, style: .grouped, dataSource: sortedContactsModels, config: config, cellType: SFContactsCell.self, configCell: { (cell, data) in
                 if let c = cell as? SFContactsCell, let d = data as? SFContactsModel {
                     c.name = d.name
@@ -194,6 +196,13 @@ public class SFContactsTableView: SFBaseTableView {
             }) { (value) in
                 if let model = value as? SFContactsModel? {
                     callback(model)
+                }
+            }
+            DispatchQueue.global().async {
+                self.getContactsDataSource()
+                self.sortContactsDataSource()
+                DispatchQueue.main.async {
+                    self.updateWithDataSource(self.sortedContactsModels)
                 }
             }
         }else{

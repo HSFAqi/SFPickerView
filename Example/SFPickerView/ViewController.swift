@@ -258,10 +258,7 @@ extension ViewController: UITableViewDelegate {
     
     /// Contact
     func contactTableAction(tag: Int) {
-        var config = SFConfig.init()
-        config.rowHeight = 100
-        config.isCallbackWhenSelecting = true
-        SFContactsTableView.showContactsTableWithTitle("联系人", config: config) { (model) in
+        SFContactsTableView.showContactsTableWithTitle("联系人", config: nil) { (model) in
             print(model?.name ?? "")
         }
     }
