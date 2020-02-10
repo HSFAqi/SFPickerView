@@ -9,6 +9,10 @@
 import UIKit
 import Contacts
 
+// TODO:
+// 1，联系人多选
+// 2，打电话功能
+
 public class SFContactsTableView: SFBaseTableView {
     
     // MARK: - Property(private)

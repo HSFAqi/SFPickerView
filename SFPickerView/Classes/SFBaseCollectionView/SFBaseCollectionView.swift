@@ -25,7 +25,7 @@ public class SFBaseCollectionView: SFBaseView {
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         return view
     }()
-    var column: Int = 3
+    private(set) var itemSize: CGSize = CGSize.zero
     // MARK: - Property(private)
     private(set) var cellType: UICollectionViewCell.Type? {
         willSet{
@@ -136,8 +136,9 @@ extension SFBaseCollectionView: UICollectionViewDelegate {
 }
 extension SFBaseCollectionView: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let w = (collectionView.frame.size.width - minimumInteritemSpacing*CGFloat(column))/CGFloat(column)
-        return CGSize(width: w, height: w)
+        let w = (collectionView.frame.size.width - minimumInteritemSpacing*CGFloat(config.column))/CGFloat(config.column)
+        itemSize = CGSize(width: w, height: w)
+        return itemSize
     }
 }
 

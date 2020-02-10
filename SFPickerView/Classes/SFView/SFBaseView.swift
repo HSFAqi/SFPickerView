@@ -16,11 +16,10 @@ public struct SFConfig {
     public var isAnimated: Bool = true
     public var during: TimeInterval = 0.3
     public var alertViewHeight: CGFloat = 300
-    
-    /* SFBasePickerView */
-    public var rowHeight: CGFloat = 50
     public var isCallbackWhenSelecting: Bool = false
-    
+    public var rowHeight: CGFloat = 50
+    // SFBaseCollectionView
+    public var column: Int = 3
     public init() { }
 }
 
