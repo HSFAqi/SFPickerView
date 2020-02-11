@@ -8,6 +8,7 @@
 
 import UIKit
 import Photos
+import MobileCoreServices
 
 public enum SFPhotosMediaType {
     case onlyImage
@@ -126,15 +127,38 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
             showCollectionWithTitle(title, dataSource: photoModels, config: config, cellType: SFPhotoCell.self, configCell: { (cell, data) in
                 if let c = cell as? SFPhotoCell, let model = data as? SFPhotoModel {
                     if let thumbnail = model.thumbnail {
-                        c.photoImgView.image = thumbnail
+                        c.image = thumbnail
                     }else{
                         guard let a = model.asset else { return }
                         let options = PHImageRequestOptions.init()
                         options.deliveryMode = PHImageRequestOptionsDeliveryMode.opportunistic
                         options.resizeMode = PHImageRequestOptionsResizeMode.fast;
-                        PHCachingImageManager.default().requestImage(for: a, targetSize: self.itemSize, contentMode: .aspectFill, options: options) { (image, value) in
-                            model.thumbnail = image
-                            c.photoImgView.image = image
+//                        PHCachingImageManager.default().requestImage(for: a, targetSize: self.itemSize, contentMode: .aspectFill, options: options) { (image, info) in
+//                            model.thumbnail = image
+//                            c.image = image
+//                        }
+                        PHCachingImageManager.default().requestImageData(for: a, options: options) { (data, uti, orientation, info) in
+                            if let imageData = data {
+                                let image = UIImage(data: imageData)
+                                model.thumbnail = image
+                                c.image = image
+                                if a.mediaType == .image {
+                                    c.type = .image
+                                    if let dataUTI = uti {
+                                        if dataUTI == (kUTTypeGIF as String) {
+                                            c.type = .gif
+                                        }
+                                        if #available(iOS 9.1, *) {
+                                            if dataUTI == (kUTTypeLivePhoto as String) {
+                                                c.type = .live
+                                            }
+                                        }
+                                    }
+                                }
+                                else if a.mediaType == .video {
+                                    c.type = .video
+                                }
+                            }
                         }
                     }
                 }

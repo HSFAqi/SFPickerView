@@ -136,9 +136,12 @@ extension SFBaseCollectionView: UICollectionViewDelegate {
 }
 extension SFBaseCollectionView: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let w = (collectionView.frame.size.width - minimumInteritemSpacing*CGFloat(config.column))/CGFloat(config.column)
+        let w = (collectionView.frame.size.width - minimumInteritemSpacing*CGFloat(config.column+2))/CGFloat(config.column)
         itemSize = CGSize(width: w, height: w)
         return itemSize
+    }
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: minimumLineSpacing, left: minimumInteritemSpacing, bottom: minimumLineSpacing, right: minimumInteritemSpacing)
     }
 }
 

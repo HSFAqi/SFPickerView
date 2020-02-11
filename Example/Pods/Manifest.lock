@@ -11,7 +11,7 @@ PODS:
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
   - Quick (1.2.0)
-  - SFPickerView (0.1.2)
+  - SFPickerView (0.1.4)
 
 DEPENDENCIES:
   - FBSnapshotTestCase (~> 2.1.4)
@@ -36,7 +36,7 @@ SPEC CHECKSUMS:
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
-  SFPickerView: 9710a70f5b179b3b67b2cbb0452ee9f96b2dd88e
+  SFPickerView: 821a300cc40c5014d692e24d0817b053d59d73f8
 
 PODFILE CHECKSUM: 7914b507224b1bc1191c7f6a88416e45860171ec
 
