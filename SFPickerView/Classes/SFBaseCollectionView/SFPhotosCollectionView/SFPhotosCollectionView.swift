@@ -133,15 +133,15 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
                         let options = PHImageRequestOptions.init()
                         options.deliveryMode = PHImageRequestOptionsDeliveryMode.opportunistic
                         options.resizeMode = PHImageRequestOptionsResizeMode.fast;
-//                        PHCachingImageManager.default().requestImage(for: a, targetSize: self.itemSize, contentMode: .aspectFill, options: options) { (image, info) in
-//                            model.thumbnail = image
-//                            c.image = image
-//                        }
+                        PHCachingImageManager.default().requestImage(for: a, targetSize: self.itemSize, contentMode: .aspectFill, options: options) { (image, info) in
+                            model.thumbnail = image
+                            c.image = image
+                        }
                         PHCachingImageManager.default().requestImageData(for: a, options: options) { (data, uti, orientation, info) in
-                            if let imageData = data {
-                                let image = UIImage(data: imageData)
-                                model.thumbnail = image
-                                c.image = image
+                            if let _ = data {
+//                                let image = UIImage(data: imageData)
+//                                model.thumbnail = image
+//                                c.image = image
                                 if a.mediaType == .image {
                                     c.type = .image
                                     if let dataUTI = uti {

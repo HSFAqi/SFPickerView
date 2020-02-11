@@ -69,9 +69,12 @@ class SFPhotoCell: UICollectionViewCell {
     }()
     private lazy var selectImgView: UIImageView = {
         let imgView = UIImageView()
-        imgView.contentMode = .scaleAspectFill
+        imgView.contentMode = .scaleAspectFit
         imgView.image = UIImage.bundleImageWithName("sf_select_nor")
         imgView.highlightedImage = UIImage.bundleImageWithName("sf_select_sel")
+        imgView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer.init(target: self, action: #selector(selectAction))
+        imgView.addGestureRecognizer(tap)
         return imgView
     }()
     private lazy var playImgView: UIImageView = {
@@ -106,6 +109,11 @@ class SFPhotoCell: UICollectionViewCell {
         
         self.layer.masksToBounds = true
         self.layer.cornerRadius = 8
+    }
+    
+    /// 选择
+    @objc private func selectAction() {
+        selectImgView.isHighlighted = !selectImgView.isHighlighted
     }
     
 }

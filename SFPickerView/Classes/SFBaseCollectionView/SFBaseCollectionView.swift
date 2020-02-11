@@ -127,6 +127,7 @@ extension SFBaseCollectionView: UICollectionViewDataSource {
 }
 extension SFBaseCollectionView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: false)
         isChanged = true
         selData = usefulDataSource[indexPath.section][indexPath.row]
         if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
