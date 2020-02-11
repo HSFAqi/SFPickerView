@@ -98,12 +98,22 @@ extension SFContactsModel : CollationIndexable {
     }
 }
 
+
 /// 相册
-public class SFPhotoModel {
+public enum SFPhotoType {
+    case image
+    case gif
+    case live
+    case video
+}
+public class SFSelectModel {
+    public var isSelected: Bool = false
+}
+public class SFPhotoModel: SFSelectModel {
     public var asset: PHAsset?
-    public var selected: Bool = false
     public var image: UIImage?
     public var thumbnail: UIImage?
+    public var type: SFPhotoType?
 }
 
 

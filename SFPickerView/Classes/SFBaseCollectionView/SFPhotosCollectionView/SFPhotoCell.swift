@@ -8,46 +8,41 @@
 
 import UIKit
 
-enum SFPhotoType {
-    case image
-    case gif
-    case live
-    case video
-}
-
 class SFPhotoCell: UICollectionViewCell {
     
-    var image: UIImage? {
+    var model: SFPhotoModel! {
         willSet{
-            if let img = newValue {
-                photoImgView.image = img
+            if let m = newValue {
+                photoImgView.image = m.thumbnail
+                selectImgView.isHighlighted = m.isSelected
+                switch m.type {
+                case .image:
+                    tagLabel.isHidden = true
+                    playImgView.isHidden = true
+                    break
+                case .gif:
+                    tagLabel.text = "GIF"
+                    tagLabel.isHidden = false
+                    playImgView.isHidden = true
+                    break
+                case .live:
+                    tagLabel.text = "LIVE"
+                    tagLabel.isHidden = false
+                    playImgView.isHidden = true
+                    break
+                case .video:
+                    tagLabel.isHidden = true
+                    playImgView.isHidden = false
+                    break
+                case .none:
+                    tagLabel.isHidden = true
+                    playImgView.isHidden = true
+                    break
+                }
             }
         }
     }
-    var type: SFPhotoType = .image {
-        willSet{
-            switch newValue {
-            case .image:
-                tagLabel.isHidden = true
-                playImgView.isHidden = true
-                break
-            case .gif:
-                tagLabel.text = "GIF"
-                tagLabel.isHidden = false
-                playImgView.isHidden = true
-                break
-            case .live:
-                tagLabel.text = "LIVE"
-                tagLabel.isHidden = false
-                playImgView.isHidden = true
-                break
-            case .video:
-                tagLabel.isHidden = true
-                playImgView.isHidden = false
-                break
-            }
-        }
-    }
+    var selectBlock: ((SFPhotoModel) -> Void)?
     // MARK: - Property(private)
     private lazy var photoImgView: SFImageView = {
         let imgView = SFImageView(frame: CGRect.zero)
@@ -113,7 +108,9 @@ class SFPhotoCell: UICollectionViewCell {
     
     /// 选择
     @objc private func selectAction() {
-        selectImgView.isHighlighted = !selectImgView.isHighlighted
+        if let block = selectBlock {
+            block(model)
+        }
     }
     
 }

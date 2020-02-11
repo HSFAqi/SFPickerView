@@ -276,7 +276,7 @@ extension ViewController: UITableViewDelegate {
     
     /// Photos
     func photosAction(tag: Int) {
-        SFPhotosCollectionView.showPhotosCollectionWithTitle("选照片", mediaType: .imageAndVideo, selectMode: .single, config: nil) { (model) in
+        SFPhotosCollectionView.showPhotosCollectionWithTitle("选照片", mediaType: .imageAndVideo, selectMode: .mul(max: 3), config: nil) { (model) in
             
         }
     }

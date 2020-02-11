@@ -8,6 +8,11 @@
 
 import UIKit
 
+public enum SFCollectionSelectMode {
+    case single
+    case mul(max: Int)
+}
+
 private let reuseIdentifier: String = "collectionViewCell"
 private let minimumLineSpacing: CGFloat = 2
 private let minimumInteritemSpacing: CGFloat = 2
@@ -27,6 +32,8 @@ public class SFBaseCollectionView: SFBaseView {
     }()
     private(set) var itemSize: CGSize = CGSize.zero
     // MARK: - Property(private)
+    private(set) var selectMode: SFCollectionSelectMode = .single
+    private(set) var curSelectCount: Int = 0
     private(set) var cellType: UICollectionViewCell.Type? {
         willSet{
             if let type = newValue {
@@ -37,18 +44,22 @@ public class SFBaseCollectionView: SFBaseView {
     // 外部传入的数据源
     private(set) var dataSource = [Any?]() {
         willSet{
-            if let data = newValue as? [[Any?]] {
+            if let data = newValue as? [[SFSelectModel?]] {
                 usefulDataSource = data
-            }else{
-                usefulDataSource = [newValue]
+            }
+            else if let data = newValue as? [SFSelectModel?] {
+                usefulDataSource = [data]
+            }
+            else{
+                assertionFailure("数据格式错误")
             }
         }
     }
     // 内部使用的数据源
-    private(set) var usefulDataSource = [[Any?]]()
-    private var selData: Any?
+    private(set) var usefulDataSource = [[SFSelectModel?]]()
+    private(set) var selData: Any?
     // 给cell赋值
-    private var configCellBlock: ((UICollectionViewCell, Any?) -> Void)?
+    private var configCellBlock: ((UICollectionViewCell, SFSelectModel?) -> Void)?
     // 点击确定回调
     private var callbackBlock: ((Any?) -> Void)?
     
@@ -65,15 +76,16 @@ public class SFBaseCollectionView: SFBaseView {
     
     /// 【Base】类方法
     @discardableResult
-    public final class func showCollectionWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, cellType: UICollectionViewCell.Type?, configCell: ((UICollectionViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseCollectionView {
+    public final class func showCollectionWithTitle(_ title: String?, dataSource: [Any?], selectMode: SFCollectionSelectMode, config: SFConfig?, cellType: UICollectionViewCell.Type?, configCell: ((UICollectionViewCell, SFSelectModel?) -> Void)?, callback: @escaping ((Any?) -> Void)) -> SFBaseCollectionView {
         let collectionView = SFBaseCollectionView(frame: CGRect.zero)
-        collectionView.showCollectionWithTitle(title, dataSource: dataSource, config: config, cellType: cellType, configCell: configCell, callback: callback)
+        collectionView.showCollectionWithTitle(title, dataSource: dataSource, selectMode: selectMode, config: config, cellType: cellType, configCell: configCell, callback: callback)
         return collectionView
     }
     /// 【Base】对象方法
-    public final func showCollectionWithTitle(_ title: String?, dataSource: [Any?], config: SFConfig?, cellType: UICollectionViewCell.Type?, configCell: ((UICollectionViewCell, Any?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
+    public final func showCollectionWithTitle(_ title: String?, dataSource: [Any?], selectMode: SFCollectionSelectMode, config: SFConfig?, cellType: UICollectionViewCell.Type?, configCell: ((UICollectionViewCell, SFSelectModel?) -> Void)?, callback: @escaping ((Any?) -> Void)) {
         self.title = title
         self.dataSource = dataSource
+        self.selectMode = selectMode
         if let c = config {
             self.config = c
         }
@@ -128,11 +140,61 @@ extension SFBaseCollectionView: UICollectionViewDataSource {
 extension SFBaseCollectionView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: false)
+        
+    }
+    
+    /// 选择（点击选中按钮）
+    func willSelectData(_ data: SFSelectModel) {
         isChanged = true
-        selData = usefulDataSource[indexPath.section][indexPath.row]
+        data.isSelected = !data.isSelected
+        switch selectMode {
+        case .single:
+            if data.isSelected {
+                if let oldData = selData as? SFSelectModel {
+                    oldData.isSelected = false
+                }
+                selData = data
+            }else{
+                selData = nil
+            }
+        case .mul(max: let maxCount):
+            var newDataArr = [SFSelectModel?]()
+            if var arr = selData as? [SFSelectModel?] {
+                if data.isSelected {
+                    if curSelectCount < maxCount {
+                        arr.append(data)
+                    }else{
+                        data.isSelected = false
+                        showMaxCountAlert()
+                    }
+                }else{
+                    arr.removeAll { (model) -> Bool in
+                        return model === data
+                    }
+                }
+                newDataArr = arr
+            }else{
+                if data.isSelected {
+                    if curSelectCount < maxCount {
+                        newDataArr = [data]
+                    }else{
+                        data.isSelected = false
+                        showMaxCountAlert()
+                    }
+                }else{
+                    newDataArr = []
+                }
+            }
+            selData = newDataArr
+            curSelectCount = newDataArr.count
+        }
+        collectionView.reloadData()
         if let callback = callbackBlock, config.isCallbackWhenSelecting == true {
             callback(selData)
         }
+    }
+    private func showMaxCountAlert() {
+        SFAlertView.showAlert(title: "最多选择\(curSelectCount)个", message: nil, sureTitle: "好的", handler: nil)
     }
 }
 extension SFBaseCollectionView: UICollectionViewDelegateFlowLayout {

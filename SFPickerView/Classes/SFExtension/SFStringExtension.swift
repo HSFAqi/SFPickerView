@@ -43,3 +43,5 @@ public extension String {
         return hasBlank ? pinyin : pinyin.replacingOccurrences(of: " ", with: "")
     }
 }
+
+

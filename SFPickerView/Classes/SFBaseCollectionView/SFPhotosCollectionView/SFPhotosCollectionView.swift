@@ -15,10 +15,6 @@ public enum SFPhotosMediaType {
     case onlyVideo
     case imageAndVideo
 }
-public enum SFPhotosSelectMode {
-    case single
-    case mul
-}
 
 public class SFPhotosCollectionView: SFBaseCollectionView {
     
@@ -26,7 +22,6 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
     private var isGranted: Bool = false
     private var photoModels = [SFPhotoModel]()
     private var mediaType: SFPhotosMediaType = .onlyImage
-    private var selectMode: SFPhotosSelectMode = .single
 
     // MARK: - ConfigUI
     override func configUI() {
@@ -109,7 +104,7 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
     ///   - config: 配置
     ///   - callback: 回调
     @discardableResult
-    public final class func showPhotosCollectionWithTitle(_ title: String?, mediaType: SFPhotosMediaType, selectMode: SFPhotosSelectMode, config: SFConfig?, callback: @escaping ((SFPhotoModel?) -> Void)) -> SFPhotosCollectionView{
+    public final class func showPhotosCollectionWithTitle(_ title: String?, mediaType: SFPhotosMediaType, selectMode: SFCollectionSelectMode, config: SFConfig?, callback: @escaping ((SFPhotoModel?) -> Void)) -> SFPhotosCollectionView{
         let collectionView = SFPhotosCollectionView(frame: CGRect.zero)
         collectionView.showPhotosCollectionWithTitle(title, mediaType: mediaType, selectMode: selectMode, config: config, callback: callback)
         return collectionView
@@ -120,14 +115,14 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
     ///   - title: 标题
     ///   - config: 配置
     ///   - callback: 回调
-    public final func showPhotosCollectionWithTitle(_ title: String?, mediaType: SFPhotosMediaType, selectMode: SFPhotosSelectMode, config: SFConfig?, callback: @escaping ((SFPhotoModel?) -> Void)) {
+    public final func showPhotosCollectionWithTitle(_ title: String?, mediaType: SFPhotosMediaType, selectMode: SFCollectionSelectMode, config: SFConfig?, callback: @escaping ((SFPhotoModel?) -> Void)) {
         if isGranted {
             self.mediaType = mediaType
-            self.selectMode = selectMode
-            showCollectionWithTitle(title, dataSource: photoModels, config: config, cellType: SFPhotoCell.self, configCell: { (cell, data) in
-                if let c = cell as? SFPhotoCell, let model = data as? SFPhotoModel {
+            showCollectionWithTitle(title, dataSource: photoModels, selectMode: selectMode, config: config, cellType: SFPhotoCell.self, configCell: { (cell, data) in
+                if let photoCell = cell as? SFPhotoCell, let model = data as? SFPhotoModel {
                     if let thumbnail = model.thumbnail {
-                        c.image = thumbnail
+                        model.thumbnail = thumbnail
+                        photoCell.model = model
                     }else{
                         guard let a = model.asset else { return }
                         let options = PHImageRequestOptions.init()
@@ -135,31 +130,33 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
                         options.resizeMode = PHImageRequestOptionsResizeMode.fast;
                         PHCachingImageManager.default().requestImage(for: a, targetSize: self.itemSize, contentMode: .aspectFill, options: options) { (image, info) in
                             model.thumbnail = image
-                            c.image = image
+                            photoCell.model = model
                         }
                         PHCachingImageManager.default().requestImageData(for: a, options: options) { (data, uti, orientation, info) in
                             if let _ = data {
-//                                let image = UIImage(data: imageData)
-//                                model.thumbnail = image
-//                                c.image = image
                                 if a.mediaType == .image {
-                                    c.type = .image
+                                    model.type = .image
                                     if let dataUTI = uti {
                                         if dataUTI == (kUTTypeGIF as String) {
-                                            c.type = .gif
+                                            model.type = .gif
                                         }
                                         if #available(iOS 9.1, *) {
                                             if dataUTI == (kUTTypeLivePhoto as String) {
-                                                c.type = .live
+                                                model.type = .live
                                             }
                                         }
                                     }
                                 }
                                 else if a.mediaType == .video {
-                                    c.type = .video
+                                    model.type = .video
                                 }
                             }
+                            photoCell.model = model
                         }
+                    }
+                    photoCell.selectBlock = {
+                        [weak self] (model) in
+                        self?.willSelectData(model)
                     }
                 }
             }) { (value) in
@@ -171,13 +168,6 @@ public class SFPhotosCollectionView: SFBaseCollectionView {
         }else{
             self.removeFromSuperview()
         }
-    }
-}
-extension SFPhotosCollectionView {
-    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        super.collectionView(collectionView, didSelectItemAt: indexPath)
-        
     }
 }
 
